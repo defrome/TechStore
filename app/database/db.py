@@ -1,29 +1,32 @@
-import uuid
-
-from pydantic import UUID1
-from sqlalchemy import create_engine, Float, Boolean
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import Column, Integer, String
 
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite:///./sql_app.db"
 
 
-class Base(DeclarativeBase): pass
+engine = create_async_engine(
+    SQLALCHEMY_DATABASE_URL,
+    echo=True,
+    future=True
+)
 
 
-class User(Base):
-    __tablename__ = "Users"
+AsyncSessionLocal = async_sessionmaker(
+    engine,
+    class_=AsyncSession,
+    expire_on_commit=False,
+    autoflush=False,
+    autocommit=False
+)
 
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
-    first_name = Column(String)
-    surname = Column(String)
-    status = Column(String)
-    balance = Column(Float)
-    is_premium = Column(Boolean)
-    number_of_orders = Column(Integer)
+class Base(DeclarativeBase):
+    pass
 
 
-SessionLocal = sessionmaker(autoflush=False, bind=engine)
+async def get_db() -> AsyncSession:
+    async with AsyncSessionLocal() as session:
+        try:
+            yield session
+        finally:
+            await session.close()
