@@ -8,6 +8,7 @@ from app.models.models import User, Item, Category, item_category
 router = APIRouter()
 
 
+
 @router.post("/add_item_to_categories")
 async def add_item_to_categories(
         item_id: int,

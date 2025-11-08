@@ -5,12 +5,16 @@ from sqlalchemy.orm import sessionmaker, relationship
 
 from app.database.db import Base, engine
 
+
+
 item_category = Table(
     'item_category',
     Base.metadata,
     Column('item_id', Integer, ForeignKey('Items.id')),
     Column('category_id', Integer, ForeignKey('categories.id'))
 )
+
+
 
 class User(Base):
     __tablename__ = "Users"
@@ -23,6 +27,7 @@ class User(Base):
     is_premium = Column(Boolean)
     number_of_orders = Column(Integer)
     avatar_image = Column(String)
+
 
 
 class Item(Base):
@@ -38,6 +43,8 @@ class Item(Base):
     image = Column(String)
 
     categories = relationship("Category", secondary=item_category, back_populates="items")
+
+
 
 class Category(Base):
     __tablename__ = "categories"

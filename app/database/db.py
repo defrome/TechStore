@@ -2,7 +2,9 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sess
 from sqlalchemy.orm import DeclarativeBase
 
 
+
 SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite:///./sql_app.db"
+
 
 
 engine = create_async_engine(
@@ -10,6 +12,7 @@ engine = create_async_engine(
     echo=True,
     future=True
 )
+
 
 
 AsyncSessionLocal = async_sessionmaker(
@@ -20,8 +23,11 @@ AsyncSessionLocal = async_sessionmaker(
     autocommit=False
 )
 
+
+
 class Base(DeclarativeBase):
     pass
+
 
 
 async def get_db() -> AsyncSession:

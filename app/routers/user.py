@@ -6,6 +6,8 @@ from app.models.models import User
 
 router = APIRouter()
 
+
+
 @router.get("/get_users")
 async def get_users(db: AsyncSession = Depends(get_db)):
     try:
@@ -31,6 +33,7 @@ async def get_users(db: AsyncSession = Depends(get_db)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error getting users: {str(e)}"
         )
+
 
 
 @router.post("/create_user")
