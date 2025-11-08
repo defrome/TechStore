@@ -16,6 +16,3 @@ class User(Base):
     balance = Column(Float)
     is_premium = Column(Boolean)
     number_of_orders = Column(Integer)
-
-
-SessionLocal = sessionmaker(autoflush=False, bind=engine)
