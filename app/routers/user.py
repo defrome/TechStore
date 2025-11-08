@@ -34,7 +34,13 @@ async def get_users(db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/create_user")
-async def create_user(first_name: str = "Alexander", surname: str = "Ivanov", status: str = "active", balance: float = 10000, is_premium: bool = True, number_of_orders: int = 10, db: AsyncSession = Depends(get_db)):
+async def create_user(first_name: str = "Alexander",
+                      surname: str = "Ivanov",
+                      status: str = "active",
+                      balance: float = 10000,
+                      is_premium: bool = True,
+                      number_of_orders: int = 10,
+                      db: AsyncSession = Depends(get_db)):
     try:
         new_user = User(
             first_name=first_name,
