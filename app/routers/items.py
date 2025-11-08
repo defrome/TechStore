@@ -7,8 +7,12 @@ from app.models.models import User, Item, Category, item_category
 
 router = APIRouter()
 
+
+
 @router.get("/get_item")
-async def get_items(db: AsyncSession = Depends(get_db)):
+async def get_items(
+        db: AsyncSession = Depends(get_db)
+):
     try:
         result = await db.execute(select(Item))
         items = result.scalars().all()
