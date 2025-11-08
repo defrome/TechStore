@@ -3,7 +3,7 @@ from sqlalchemy import select
 
 from app.database.db import AsyncSession
 from app.database.db import get_db
-from app.models.models import User, Item
+from app.models.models import User, Item, Category, item_category
 
 router = APIRouter()
 
@@ -15,21 +15,38 @@ async def get_items(db: AsyncSession = Depends(get_db)):
 
         item_list = []
         for item in items:
+            categories_result = await db.execute(
+                select(Category)
+                .join(item_category)
+                .where(item_category.c.item_id == item.id)
+            )
+            categories = categories_result.scalars().all()
+
             item_list.append({
                 "id": item.id,
                 "name": item.name,
                 "description": item.description,
+                "price": item.price,
                 "availability_status": item.availability_status,
                 "manufacturer": item.manufacturer,
                 "quantity": item.quantity,
+                "image": item.image,
+                "categories": [
+                    {
+                        "id": cat.id,
+                        "name": cat.name,
+                        "description": cat.description
+                    } for cat in categories
+                ]
             })
 
         return {"items": item_list}
+
     except Exception as e:
         await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error getting item: {str(e)}"
+            detail=f"Error getting items: {str(e)}"
         )
 
 
