@@ -40,6 +40,7 @@ async def create_item(name: str = "IPhone 17 Pro",
                       availability_status: str = "Available",
                       manufacturer: str = "Apple",
                       quantity: int = 34,
+                      image: str = "https://www.google.com/url?sa=i&url=https%3A%2F%2Fiphoriya.ru%2Fproduct%2Fapple-iphone-17-pro-1tb-deep-blue&psig=AOvVaw2G9RtQjWq92Ld867O7Z5tn&ust=1762680640661000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCPD9lJ2f4pADFQAAAAAdAAAAABAE",
                       db: AsyncSession = Depends(get_db)):
     try:
         new_item = Item(
@@ -47,7 +48,8 @@ async def create_item(name: str = "IPhone 17 Pro",
             description=description,
             availability_status=availability_status,
             manufacturer=manufacturer,
-            quantity=quantity
+            quantity=quantity,
+            image=image
         )
 
         db.add(new_item)

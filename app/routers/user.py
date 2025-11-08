@@ -40,6 +40,7 @@ async def create_user(first_name: str = "Alexander",
                       balance: float = 10000,
                       is_premium: bool = True,
                       number_of_orders: int = 10,
+                      avatar_image: str = "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.freepik.com%2Ffree-photos-vectors%2Favatar&psig=AOvVaw33ClmX2E8OHjnnkiVYpEC8&ust=1762680730422000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCJjhscif4pADFQAAAAAdAAAAABAE",
                       db: AsyncSession = Depends(get_db)):
     try:
         new_user = User(
@@ -48,7 +49,8 @@ async def create_user(first_name: str = "Alexander",
             status=status,
             balance=balance,
             is_premium=is_premium,
-            number_of_orders=number_of_orders
+            number_of_orders=number_of_orders,
+            avatar_image=avatar_image
         )
 
         db.add(new_user)

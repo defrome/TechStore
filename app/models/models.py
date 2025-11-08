@@ -16,6 +16,7 @@ class User(Base):
     balance = Column(Float)
     is_premium = Column(Boolean)
     number_of_orders = Column(Integer)
+    avatar_image = Column(String)
 
 
 class Item(Base):
@@ -27,4 +28,5 @@ class Item(Base):
     availability_status = Column(String)
     manufacturer = Column(String)
     quantity = Column(Integer)
+    image = Column(String)
 
