@@ -29,4 +29,3 @@ class Item(Base):
     manufacturer = Column(String)
     quantity = Column(Integer)
     image = Column(String)
-
