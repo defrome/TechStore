@@ -16,3 +16,15 @@ class User(Base):
     balance = Column(Float)
     is_premium = Column(Boolean)
     number_of_orders = Column(Integer)
+
+
+class Item(Base):
+    __tablename__ = "Items"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    description = Column(String)
+    availability_status = Column(String)
+    manufacturer = Column(String)
+    quantity = Column(Integer)
+
