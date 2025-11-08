@@ -1,0 +1,96 @@
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import select, and_, insert
+
+from app.database.db import AsyncSession
+from app.database.db import get_db
+from app.models.models import User, Item, Category, item_category
+
+router = APIRouter()
+
+
+@router.post("/add_item_to_category")
+async def add_item_to_category(
+        item_id: int,
+        category_id: int,
+        db: AsyncSession = Depends(get_db)
+):
+    try:
+        item = await db.get(Item, item_id)
+        category = await db.get(Category, category_id)
+
+        if not item:
+            raise HTTPException(404, "Item not found")
+        if not category:
+            raise HTTPException(404, "Category not found")
+
+        existing = await db.execute(
+            select(item_category).where(
+                item_category.c.item_id == item_id,
+                item_category.c.category_id == category_id
+            )
+        )
+        if existing.first():
+            raise HTTPException(400, "Item already in this category")
+
+        await db.execute(
+            item_category.insert().values(
+                item_id=item_id,
+                category_id=category_id
+            )
+        )
+        await db.commit()
+
+        return {
+            "message": f"Item '{item.name}' added to category '{category.name}'",
+            "item_id": item_id,
+            "category_id": category_id
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(500, f"Error: {str(e)}")
+
+
+
+@router.post("/create_categories")
+async def create_category(
+    name: str = "Apple",
+    description: str = "Test",
+    db: AsyncSession = Depends(get_db)
+):
+    try:
+        existing_category = await db.execute(
+            select(Category).where(Category.name == name)
+        )
+        if existing_category.scalar_one_or_none():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Category with this name already exists"
+            )
+
+        new_category = Category(
+            name=name,
+            description=description
+        )
+
+        db.add(new_category)
+        await db.commit()
+        await db.refresh(new_category)
+
+        return {
+            "message": "Category created successfully",
+            "category_id": new_category.id,
+            "name": new_category.name,
+            "description": new_category.description
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error creating category: {str(e)}"
+        )

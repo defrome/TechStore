@@ -1,10 +1,16 @@
 import uuid
 
-from sqlalchemy import Column, String, Float, Boolean, Integer
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Column, String, Float, Boolean, Integer, ForeignKey, Table
+from sqlalchemy.orm import sessionmaker, relationship
 
 from app.database.db import Base, engine
 
+item_category = Table(
+    'item_category',
+    Base.metadata,
+    Column('item_id', Integer, ForeignKey('Items.id')),
+    Column('category_id', Integer, ForeignKey('categories.id'))
+)
 
 class User(Base):
     __tablename__ = "Users"
@@ -25,7 +31,19 @@ class Item(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
     description = Column(String)
-    availability_status = Column(String)
+    price = Column(Integer)
+    availability_status = Column(Boolean)
     manufacturer = Column(String)
     quantity = Column(Integer)
     image = Column(String)
+
+    categories = relationship("Category", secondary=item_category, back_populates="items")
+
+class Category(Base):
+    __tablename__ = "categories"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, index=True)  # "Apple", "Samsung", etc.
+    description = Column(String)
+
+    items = relationship("Item", secondary=item_category, back_populates="categories")
