@@ -1,4 +1,4 @@
-# 🚀 TechHub - Modern E-Commerce API
+# 🚀 TechStore - Modern E-Commerce API
 
 <div align="center">
 
