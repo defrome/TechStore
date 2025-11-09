@@ -17,7 +17,6 @@ app.add_middleware(
 app.include_router(user.router)
 app.include_router(items.router)
 app.include_router(categories.router)
-app.include_router(auth.router)
 
 @app.on_event("startup")
 async def startup():
