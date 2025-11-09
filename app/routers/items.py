@@ -1,13 +1,14 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select
+from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy import select, delete
 
 from app.database.db import AsyncSession
 from app.database.db import get_db
 from app.models.models import User, Item, Category, item_category
 
 router = APIRouter()
-
-
 
 @router.get("/get_item")
 async def get_items(
@@ -90,3 +91,24 @@ async def create_item(name: str = "IPhone 17 Pro",
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error creating user: {str(e)}"
         )
+
+
+@router.delete("/delete_items")
+async def delete_item_by_id(
+        item_id: int,
+        db: AsyncSession = Depends(get_db)
+):
+    try:
+        result = await db.execute(
+            delete(Item).where(Item.id == item_id)
+        )
+        await db.commit()
+
+        if result.rowcount > 0:
+            return {"message": f"Item {item_id} deleted successfully"}
+        else:
+            return {"message": f"Item {item_id} not found"}
+
+    except Exception as e:
+        await db.rollback()
+        raise e
