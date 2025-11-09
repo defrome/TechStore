@@ -1,10 +1,22 @@
 from fastapi.middleware.cors import CORSMiddleware
+from sqladmin import Admin
 
+from app.admin.categories_admin import CategoryAdmin
+from app.admin.items_admin import ItemAdmin
+from app.admin.users_admin import UserAdmin
 from app.database.db import Base, engine
 from fastapi import FastAPI
-from app.routers import user, items, categories, auth
+from app.routers import user, items, categories
 
 app = FastAPI()
+
+admin = Admin(
+    app,
+    engine,
+    title="My Admin",
+    base_url="/api/admin",
+    debug=True,
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -17,6 +29,10 @@ app.add_middleware(
 app.include_router(user.router)
 app.include_router(items.router)
 app.include_router(categories.router)
+
+admin.add_view(ItemAdmin)
+admin.add_view(CategoryAdmin)
+admin.add_view(UserAdmin)
 
 @app.on_event("startup")
 async def startup():

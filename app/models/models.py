@@ -28,6 +28,8 @@ class User(Base):
     number_of_orders = Column(Integer)
     avatar_image = Column(String)
 
+    def __repr__(self):
+        return f"Category(id={self.id}, name='{self.name}', surname='{self.surname})"
 
 
 class Item(Base):
@@ -44,6 +46,8 @@ class Item(Base):
 
     categories = relationship("Category", secondary=item_category, back_populates="items")
 
+    def __repr__(self):
+        return f"Item(id={self.id}, name='{self.name}')"
 
 
 class Category(Base):
@@ -54,3 +58,6 @@ class Category(Base):
     description = Column(String)
 
     items = relationship("Item", secondary=item_category, back_populates="categories")
+
+    def __repr__(self):
+        return f"Category(id={self.id}, name='{self.name}')"
