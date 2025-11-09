@@ -1186,4 +1186,101 @@
         }
 
         // Open product modal with details
-        function openProductModal(product
+        function openProductModal(product) {
+            // Format price
+            const formattedPrice = new Intl.NumberFormat('ru-RU', {
+                style: 'currency',
+                currency: 'RUB'
+            }).format(product.price);
+
+            // Set modal content
+            document.getElementById('modalProductName').textContent = product.name;
+            document.getElementById('modalPrice').textContent = formattedPrice;
+            document.getElementById('modalManufacturer').textContent = product.manufacturer || 'Производитель не указан';
+            document.getElementById('modalDescription').textContent = product.description || 'Описание отсутствует';
+            document.getElementById('modalQuantity').textContent = `${product.quantity} шт.`;
+
+            // Set image
+            const imageContainer = document.getElementById('modalImageContainer');
+            if (product.image) {
+                imageContainer.innerHTML = `<img src="${product.image}" alt="${product.name}" class="modal-image" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\"image-placeholder\">📱</div>';" />`;
+            } else {
+                imageContainer.innerHTML = '<div class="image-placeholder">📱</div>';
+            }
+
+            // Set categories
+            const categoriesContainer = document.getElementById('modalCategories');
+            categoriesContainer.innerHTML = '';
+            if (product.categories && product.categories.length > 0) {
+                product.categories.forEach(category => {
+                    const tag = document.createElement('span');
+                    tag.className = 'modal-category-tag';
+                    tag.textContent = category.name;
+                    categoriesContainer.appendChild(tag);
+                });
+            }
+
+            // Set availability
+            const isAvailable = product.availability_status && product.quantity > 0;
+            const availabilityElement = document.getElementById('modalAvailability');
+            const availabilityText = document.getElementById('availabilityText');
+            const availabilityDot = availabilityElement.querySelector('.availability-dot');
+
+            if (isAvailable) {
+                availabilityElement.className = 'availability in-stock';
+                availabilityText.textContent = 'В наличии';
+                availabilityDot.style.backgroundColor = 'var(--success-color)';
+                document.getElementById('modalAddToCart').disabled = false;
+                document.getElementById('modalAddToCart').textContent = 'В корзину';
+            } else {
+                availabilityElement.className = 'availability out-of-stock';
+                availabilityText.textContent = 'Нет в наличии';
+                availabilityDot.style.backgroundColor = 'var(--error-color)';
+                document.getElementById('modalAddToCart').disabled = true;
+                document.getElementById('modalAddToCart').textContent = 'Недоступно';
+            }
+
+            // Set add to cart functionality
+            const modalAddToCart = document.getElementById('modalAddToCart');
+            modalAddToCart.onclick = () => addToCart(product);
+
+            // Show modal
+            productModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close product modal
+        function closeProductModal() {
+            productModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Add product to cart
+        function addToCart(product) {
+            // In a real application, you would update the cart state
+            alert(`Товар "${product.name}" добавлен в корзину!`);
+            closeProductModal();
+        }
+
+        // UI State Management
+        function showLoading() {
+            loadingIndicator.style.display = 'flex';
+            productsGrid.style.display = 'none';
+        }
+
+        function hideLoading() {
+            loadingIndicator.style.display = 'none';
+            productsGrid.style.display = 'grid';
+        }
+
+        function showError() {
+            errorMessage.style.display = 'block';
+            productsGrid.style.display = 'none';
+        }
+
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
