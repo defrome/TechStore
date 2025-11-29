@@ -3,16 +3,12 @@ from sqlalchemy import Column, String, Float, Boolean, Integer, ForeignKey, Tabl
 from sqlalchemy.orm import sessionmaker, relationship
 from app.database.db import Base, engine
 
-
-
 item_category = Table(
     'item_category',
     Base.metadata,
     Column('item_id', Integer, ForeignKey('Items.id')),
     Column('category_id', Integer, ForeignKey('categories.id'))
 )
-
-
 
 class User(Base):
     __tablename__ = "Users"
