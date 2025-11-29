@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Админ панель</title>
+    <title>TechStore - Электронная техника</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -101,21 +101,52 @@
         }
     </style>
 </head>
-<body>
-    <h1>Админ панель</h1>
+<body style="margin: 0; font-family: 'Arial', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh;">
+    <div style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 2rem 0; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px; text-align: center;">
+            <h1 style="margin: 0; font-size: 2.5rem; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">TechStore</h1>
+            <p style="margin: 0; color: #666; font-size: 1.1rem;">Электронная техника</p>
+        </div>
+    </div>
     
-    <div class="container">
-        <h2>Товары</h2>
-        <button id="loadItemsBtn" onclick="loadItems()">Загрузить товары</button>
-        <div id="result"></div>
+    <div style="max-width: 1200px; margin: 2rem auto; padding: 0 20px;">
+        <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+            <h2 style="color: #333; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.5em;">📱</span> Товары
+            </h2>
+            <button onclick="loadItems()" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 12px 30px; border-radius: 25px; cursor: pointer; font-size: 1rem; font-weight: 500; transition: all 0.3s ease;">
+                Загрузить товары
+            </button>
+            <div id="result" style="margin-top: 1.5rem;"></div>
+        </div>
+
+        <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1);">
+            <h2 style="color: #333; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.5em;">👥</span> Пользователи
+            </h2>
+            <button onclick="loadUsers()" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 12px 30px; border-radius: 25px; cursor: pointer; font-size: 1rem; font-weight: 500; transition: all 0.3s ease;">
+                Загрузить пользователей
+            </button>
+            <div id="result_users" style="margin-top: 1.5rem;"></div>
+        </div>
     </div>
 
-    <div class="container">
-        <h2>Пользователи</h2>
-        <button id="loadUsersBtn" onclick="loadUsers()">Загрузить пользователей</button>
-        <div id="result_users"></div>
-    </div>
-
+    <script>
+        // Добавляем hover эффекты для кнопок
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 5px 15px rgba(102, 126, 234, 0.4)';
+                });
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'none';
+                });
+            });
+        });
+    </script>
     <script src="app.js"></script>
 </body>
 </html>
