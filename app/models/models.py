@@ -1,8 +1,6 @@
 import uuid
-
 from sqlalchemy import Column, String, Float, Boolean, Integer, ForeignKey, Table
 from sqlalchemy.orm import sessionmaker, relationship
-
 from app.database.db import Base, engine
 
 
