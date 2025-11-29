@@ -6,8 +6,6 @@ from app.models.models import User
 
 router = APIRouter()
 
-
-
 @router.get("/get_users")
 async def get_users(db: AsyncSession = Depends(get_db)):
     try:
