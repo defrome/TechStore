@@ -1,7 +1,7 @@
 import uuid
 from sqlalchemy import Column, String, Float, Boolean, Integer, ForeignKey, Table
-from sqlalchemy.orm import sessionmaker, relationship
-from app.database.db import Base, engine
+from sqlalchemy.orm import relationship
+from app.database.db import Base
 
 item_category = Table(
     'item_category',
@@ -10,12 +10,17 @@ item_category = Table(
     Column('category_id', Integer, ForeignKey('categories.id'))
 )
 
-cart_items = Table(
-    'cart_items',
-    Base.metadata,
-    Column('cart_id', Integer, ForeignKey('carts.id')),
-    Column('item_id', Integer, ForeignKey('Items.id'))
-)
+
+class Cart(Base):
+    __tablename__ = 'cart_items'
+
+    user_id = Column(String(36), ForeignKey('Users.id'), primary_key=True)
+    item_id = Column(Integer, ForeignKey('Items.id'), primary_key=True)
+    item_value = Column(Integer, default=1)
+
+    # Relationships для доступа к связанным объектам
+    user = relationship("User", back_populates="cart_associations")
+    item = relationship("Item", back_populates="cart_associations")
 
 
 class User(Base):
@@ -30,7 +35,13 @@ class User(Base):
     number_of_orders = Column(Integer)
     avatar_image = Column(String)
 
-    cart = relationship("Cart", back_populates="user", uselist=False)
+    # Relationships через модель Cart
+    cart_associations = relationship("Cart", back_populates="user")
+
+    # Для прямого доступа к товарам в корзине
+    @property
+    def cart_items(self):
+        return [assoc.item for assoc in self.cart_associations]
 
     def __repr__(self):
         return f"User(id={self.id}, first_name='{self.first_name}', surname='{self.surname}')"
@@ -49,7 +60,12 @@ class Item(Base):
     image = Column(String)
 
     categories = relationship("Category", secondary=item_category, back_populates="items")
-    carts = relationship("Cart", secondary=cart_items, back_populates="items")
+    cart_associations = relationship("Cart", back_populates="item")
+
+    # Для прямого доступа к пользователям, у которых товар в корзине
+    @property
+    def in_carts(self):
+        return [assoc.user for assoc in self.cart_associations]
 
     def __repr__(self):
         return f"Item(id={self.id}, name='{self.name}')"
@@ -66,17 +82,3 @@ class Category(Base):
 
     def __repr__(self):
         return f"Category(id={self.id}, name='{self.name}')"
-
-
-class Cart(Base):
-    __tablename__ = "carts"
-
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(String(36), ForeignKey('Users.id'))
-
-    # Relationships
-    user = relationship("User", back_populates="cart")
-    items = relationship("Item", secondary=cart_items, back_populates="carts")
-
-    def __repr__(self):
-        return f"Cart(id={self.id}, user_id='{self.user_id}')"

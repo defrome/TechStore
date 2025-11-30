@@ -7,7 +7,8 @@ from app.admin.items_admin import ItemAdmin
 from app.admin.users_admin import UserAdmin
 from app.database.db import Base, engine
 from fastapi import FastAPI
-from app.routers import user, items, categories
+from app.routers import user, items, categories, cart
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -36,6 +37,7 @@ app.add_middleware(
 app.include_router(user.router)
 app.include_router(items.router)
 app.include_router(categories.router)
+app.include_router(cart.router)
 
 admin.add_view(ItemAdmin)
 admin.add_view(CategoryAdmin)
