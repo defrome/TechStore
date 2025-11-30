@@ -117,6 +117,57 @@ async def remove_item_from_cart(
             detail=f"Error removing item from cart: {str(e)}"
         )
 
+@router.post("/add_item")
+async def add_item(
+    user_id: str,
+    item_id: int,
+    quantity: int = 1,
+    db: AsyncSession = Depends(get_db)
+):
+    try:
+
+        result = await db.execute(
+            select(Cart).where(
+                Cart.user_id == user_id,
+                Cart.item_id == item_id
+            )
+        )
+        cart_item = result.scalar_one_or_none()
+
+        if cart_item:
+
+            cart_item.item_value += quantity
+            action = "quantity increased"
+            new_quantity = cart_item.item_value
+        else:
+
+            cart_item = Cart(
+                user_id=user_id,
+                item_id=item_id,
+                item_value=quantity
+            )
+            db.add(cart_item)
+            action = "new item added"
+            new_quantity = quantity
+
+        await db.commit()
+
+        return {
+            "message": f"Item {action} to cart successfully",
+            "user_id": user_id,
+            "item_id": item_id,
+            "added_quantity": quantity,
+            "new_quantity": new_quantity,
+            "action": action
+        }
+
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error adding item to cart: {str(e)}"
+        )
+
 @router.post("/create_cart")
 async def create_cart(user_id: str,
                       item_id: int,
