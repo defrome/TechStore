@@ -15,10 +15,9 @@ class Cart(Base):
     __tablename__ = 'cart_items'
 
     user_id = Column(String(36), ForeignKey('Users.id'), primary_key=True)
-    item_id = Column(Integer, ForeignKey('Items.id'), primary_key=True)
+    item_id = Column(Integer, ForeignKey('Items.id', ondelete="CASCADE"), primary_key=True)
     item_value = Column(Integer, default=1)
 
-    # Relationships для доступа к связанным объектам
     user = relationship("User", back_populates="cart_associations")
     item = relationship("Item", back_populates="cart_associations")
 
@@ -62,7 +61,6 @@ class Item(Base):
     categories = relationship("Category", secondary=item_category, back_populates="items")
     cart_associations = relationship("Cart", back_populates="item")
 
-    # Для прямого доступа к пользователям, у которых товар в корзине
     @property
     def in_carts(self):
         return [assoc.user for assoc in self.cart_associations]
