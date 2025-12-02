@@ -7,7 +7,7 @@ from app.admin.items_admin import ItemAdmin
 from app.admin.users_admin import UserAdmin
 from app.database.db import Base, engine
 from fastapi import FastAPI
-from app.routers import user, items, categories, cart
+from app.routers import user, items, categories, cart, order
 
 
 @asynccontextmanager
@@ -38,6 +38,7 @@ app.include_router(user.router)
 app.include_router(items.router)
 app.include_router(categories.router)
 app.include_router(cart.router)
+app.include_router(order.router)
 
 admin.add_view(ItemAdmin)
 admin.add_view(CategoryAdmin)

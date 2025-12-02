@@ -1,6 +1,8 @@
 import uuid
-from sqlalchemy import Column, String, Float, Boolean, Integer, ForeignKey, Table
+from datetime import datetime
+from sqlalchemy import Column, String, Float, Boolean, Integer, ForeignKey, Table, DateTime, Text
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 from app.database.db import Base
 
 item_category = Table(
@@ -14,12 +16,16 @@ item_category = Table(
 class Cart(Base):
     __tablename__ = 'cart_items'
 
-    user_id = Column(String(36), ForeignKey('Users.id'), primary_key=True)
-    item_id = Column(Integer, ForeignKey('Items.id', ondelete="CASCADE"), primary_key=True)
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(String(36), ForeignKey('Users.id'))
+    item_id = Column(Integer, ForeignKey('Items.id', ondelete="CASCADE"))
     item_value = Column(Integer, default=1)
 
     user = relationship("User", back_populates="cart_associations")
     item = relationship("Item", back_populates="cart_associations")
+
+    def __repr__(self):
+        return f"Cart(user_id={self.user_id}, item_id={self.item_id}, quantity={self.item_value})"
 
 
 class User(Base):
@@ -34,10 +40,9 @@ class User(Base):
     number_of_orders = Column(Integer)
     avatar_image = Column(String)
 
-    # Relationships через модель Cart
-    cart_associations = relationship("Cart", back_populates="user")
+    cart_associations = relationship("Cart", back_populates="user", cascade="all, delete-orphan")
+    orders = relationship("Order", back_populates="user", cascade="all, delete-orphan")
 
-    # Для прямого доступа к товарам в корзине
     @property
     def cart_items(self):
         return [assoc.item for assoc in self.cart_associations]
@@ -60,6 +65,7 @@ class Item(Base):
 
     categories = relationship("Category", secondary=item_category, back_populates="items")
     cart_associations = relationship("Cart", back_populates="item")
+    order_items = relationship("OrderItem", back_populates="item")
 
     @property
     def in_carts(self):
@@ -80,3 +86,37 @@ class Category(Base):
 
     def __repr__(self):
         return f"Category(id={self.id}, name='{self.name}')"
+
+
+class OrderItem(Base):
+    __tablename__ = "order_items"
+
+    id = Column(Integer, primary_key=True, index=True)
+    order_id = Column(Integer, ForeignKey('orders.id'))
+    item_id = Column(Integer, ForeignKey('Items.id'))
+    quantity = Column(Integer)
+    price_at_time = Column(Integer)
+
+    order = relationship("Order", back_populates="order_items")
+    item = relationship("Item", back_populates="order_items")
+
+    def __repr__(self):
+        return f"OrderItem(order_id={self.order_id}, item_id={self.item_id}, quantity={self.quantity})"
+
+
+class Order(Base):
+    __tablename__ = "orders"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(String(36), ForeignKey('Users.id'))
+    total_amount = Column(Integer, default=0)
+    total_items = Column(Integer, default=0)
+    status = Column(String, default="pending")
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    user = relationship("User", back_populates="orders")
+    order_items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
+
+    def __repr__(self):
+        return f"Order(id={self.id}, user_id={self.user_id}, status='{self.status}')"

@@ -117,7 +117,7 @@ async def remove_item_from_cart(
             detail=f"Error removing item from cart: {str(e)}"
         )
 
-@router.post("/add_item")
+@router.post("/cart_add_item")
 async def add_item(
     user_id: str,
     item_id: int,
