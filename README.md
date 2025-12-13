@@ -23,7 +23,7 @@ TechStore - это современный REST API для интернет-ма�
 - **🎯 Backend**: [FastAPI](https://fastapi.tiangolo.com/) - современный, быстрый веб-фреймворк
 - **🐍 Language**: [Python 3.11+](https://www.python.org/) с поддержкой async/await
 - **🗄️ ORM**: [SQLAlchemy 2.0](https://www.sqlalchemy.org/) с асинхронной поддержкой
-- **💾 Database**: [postgresql](https://aiosqlite.omnilib.dev/) - асинхронный PostgreSQL
+- **💾 Database**: [PostgreSQL](https://aiosqlite.omnilib.dev/) - асинхронный PostgreSQL
 - **📊 Admin**: [SQLAdmin](https://sqladmin.fastapi.org/) - административная панель
 - **📐 Validation**: [Pydantic V2](https://docs.pydantic.dev/) - валидация данных
 - **🔒 Authentication**: JWT токены (В разработке.)
