@@ -7,6 +7,8 @@ from app.admin.items_admin import ItemAdmin
 from app.admin.users_admin import UserAdmin
 from app.database.db import Base, engine
 from fastapi import FastAPI
+
+from app.middlewares.create_session import SessionMiddleware
 from app.routers import user, items, categories, cart, order
 
 
@@ -43,3 +45,5 @@ app.include_router(order.router)
 admin.add_view(ItemAdmin)
 admin.add_view(CategoryAdmin)
 admin.add_view(UserAdmin)
+
+app.add_middleware(SessionMiddleware)
