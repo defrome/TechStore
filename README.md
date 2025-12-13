@@ -26,7 +26,7 @@ TechStore - это современный REST API для интернет-ма�
 - **💾 Database**: [PostgreSQL](https://aiosqlite.omnilib.dev/) - асинхронный PostgreSQL
 - **📊 Admin**: [SQLAdmin](https://sqladmin.fastapi.org/) - административная панель
 - **📐 Validation**: [Pydantic V2](https://docs.pydantic.dev/) - валидация данных
-- **🔒 Authentication**: JWT токены (В разработке.)
+- **🔒 Authentication**: Cookies Guest system - Гостевая система авторизации через Cookie
 
 ## ✨ Ключевые возможности
 
