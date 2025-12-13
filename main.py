@@ -4,12 +4,11 @@ from sqladmin import Admin
 
 from app.admin.categories_admin import CategoryAdmin
 from app.admin.items_admin import ItemAdmin
-from app.admin.users_admin import UserAdmin
 from app.database.db import Base, engine
 from fastapi import FastAPI
 
 from app.middlewares.create_session import SessionMiddleware
-from app.routers import user, items, categories, cart, order
+from app.routers import items, categories, cart, order
 
 
 @asynccontextmanager
@@ -17,6 +16,10 @@ async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield
+
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+
 
 app = FastAPI(lifespan=lifespan)
 
@@ -36,7 +39,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(user.router)
 app.include_router(items.router)
 app.include_router(categories.router)
 app.include_router(cart.router)
@@ -44,6 +46,5 @@ app.include_router(order.router)
 
 admin.add_view(ItemAdmin)
 admin.add_view(CategoryAdmin)
-admin.add_view(UserAdmin)
 
 app.add_middleware(SessionMiddleware)

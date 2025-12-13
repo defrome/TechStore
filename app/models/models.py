@@ -17,39 +17,14 @@ class Cart(Base):
     __tablename__ = 'cart_items'
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(String(36), ForeignKey('Users.id'))
+    session_id = Column(String, index=True, unique=True)
     item_id = Column(Integer, ForeignKey('Items.id', ondelete="CASCADE"))
     item_value = Column(Integer, default=1)
 
-    user = relationship("User", back_populates="cart_associations")
     item = relationship("Item", back_populates="cart_associations")
 
     def __repr__(self):
-        return f"Cart(user_id={self.user_id}, item_id={self.item_id}, quantity={self.item_value})"
-
-
-class User(Base):
-    __tablename__ = "Users"
-
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
-    first_name = Column(String)
-    surname = Column(String)
-    status = Column(String)
-    balance = Column(Float)
-    is_premium = Column(Boolean)
-    number_of_orders = Column(Integer)
-    avatar_image = Column(String)
-
-    cart_associations = relationship("Cart", back_populates="user", cascade="all, delete-orphan")
-    orders = relationship("Order", back_populates="user", cascade="all, delete-orphan")
-
-    @property
-    def cart_items(self):
-        return [assoc.item for assoc in self.cart_associations]
-
-    def __repr__(self):
-        return f"User(id={self.id}, first_name='{self.first_name}', surname='{self.surname}')"
-
+        return f"Cart(item_id={self.item_id}, quantity={self.item_value})"
 
 class Item(Base):
     __tablename__ = "Items"
@@ -108,15 +83,13 @@ class Order(Base):
     __tablename__ = "orders"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(String(36), ForeignKey('Users.id'))
     total_amount = Column(Integer, default=0)
     total_items = Column(Integer, default=0)
     status = Column(String, default="pending")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-    user = relationship("User", back_populates="orders")
     order_items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
 
     def __repr__(self):
-        return f"Order(id={self.id}, user_id={self.user_id}, status='{self.status}')"
+        return f"Order(id={self.id}, status='{self.status}')"

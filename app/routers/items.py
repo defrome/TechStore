@@ -6,7 +6,7 @@ from sqlalchemy import select, delete
 
 from app.database.db import AsyncSession
 from app.database.db import get_db
-from app.models.models import User, Item, Category, item_category
+from app.models.models import Item, Category, item_category
 
 router = APIRouter()
 
@@ -82,7 +82,7 @@ async def create_item(name: str = "IPhone 17 Pro",
 
         return {
             "message": "Item created successfully",
-            "user_id": new_item.id
+            "item_id": new_item.id
         }
 
     except Exception as e:

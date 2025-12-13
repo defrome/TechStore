@@ -2,22 +2,15 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.database.db import AsyncSession
 from sqlalchemy import select
 from app.database.db import get_db
-from app.models.models import Cart, Item, User
+from app.models.models import Cart, Item
 
 router = APIRouter()
 
-@router.get("/get_user_cart")
-async def get_user_cart(user_id: str, db: AsyncSession = Depends(get_db)):
+@router.get("/get_cart")
+async def get_user_cart(cart_id: int, db: AsyncSession = Depends(get_db)):
     try:
-        user = await db.get(User, user_id)
-        if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User not found"
-            )
-
         result = await db.execute(
-            select(Cart).where(Cart.user_id == user_id)
+            select(Cart).where(Cart.id == cart_id)
         )
         cart_items = result.scalars().all()
 
@@ -41,7 +34,7 @@ async def get_user_cart(user_id: str, db: AsyncSession = Depends(get_db)):
         total_cart_price = sum(item["total_price"] for item in cart)
 
         return {
-            "user_id": user_id,
+            "cart_id": cart_id,
             "cart_items": cart,
             "total_cart_price": total_cart_price,
             "total_items": len(cart)
@@ -119,7 +112,7 @@ async def remove_item_from_cart(
 
 @router.post("/cart_add_item")
 async def add_item(
-    user_id: str,
+    cart_id: int,
     item_id: int,
     quantity: int = 1,
     db: AsyncSession = Depends(get_db)
@@ -128,7 +121,7 @@ async def add_item(
 
         result = await db.execute(
             select(Cart).where(
-                Cart.user_id == user_id,
+                Cart.id == cart_id,
                 Cart.item_id == item_id
             )
         )
@@ -142,7 +135,7 @@ async def add_item(
         else:
 
             cart_item = Cart(
-                user_id=user_id,
+                cart_id=cart_id,
                 item_id=item_id,
                 item_value=quantity
             )
@@ -154,7 +147,7 @@ async def add_item(
 
         return {
             "message": f"Item {action} to cart successfully",
-            "user_id": user_id,
+            "cart_id": cart_id,
             "item_id": item_id,
             "added_quantity": quantity,
             "new_quantity": new_quantity,
@@ -169,13 +162,12 @@ async def add_item(
         )
 
 @router.post("/create_cart")
-async def create_cart(user_id: str,
+async def create_cart(
                       item_id: int,
                       value: int = 1,
                       db: AsyncSession = Depends(get_db)):
     try:
         new_cart = Cart(
-            user_id=user_id,
             item_id=item_id,
             item_value=value
         )

@@ -2,30 +2,19 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.database.db import AsyncSession
 from sqlalchemy import select, delete
 from app.database.db import get_db
-from app.models.models import User, Order, Cart, OrderItem, Item
+from app.models.models import Order, Cart, OrderItem, Item
 
 router = APIRouter()
 
 
 @router.post("/create_order", status_code=status.HTTP_201_CREATED)
 async def create_order(
-        user_id: str,
+        cart_id: int,
         db: AsyncSession = Depends(get_db)
 ):
     try:
-        user_result = await db.execute(
-            select(User).where(User.id == user_id)
-        )
-        user = user_result.scalar_one_or_none()
-
-        if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User not found"
-            )
-
         cart_result = await db.execute(
-            select(Cart).where(Cart.user_id == user_id)
+            select(Cart).where(Cart.id == cart_id)
         )
         cart_items = cart_result.scalars().all()
 
@@ -62,7 +51,7 @@ async def create_order(
             )
 
         new_order = Order(
-            user_id=user_id,
+            cart_id=cart_id,
             total_amount=0,
             total_items=0
         )
@@ -103,10 +92,8 @@ async def create_order(
         new_order.total_items = total_items
 
         await db.execute(
-            delete(Cart).where(Cart.user_id == user_id)
+            delete(Cart).where(Cart.id == cart_id)
         )
-
-        user.number_of_orders = (user.number_of_orders or 0) + 1
 
         await db.commit()
         await db.refresh(new_order)
@@ -114,7 +101,7 @@ async def create_order(
         return {
             "message": "Order created successfully",
             "order_id": new_order.id,
-            "user_id": user_id,
+            "cart_id": cart_id,
             "total_amount": total_amount,
             "total_items": total_items,
             "items": order_items_list,

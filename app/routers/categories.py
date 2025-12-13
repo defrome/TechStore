@@ -3,7 +3,7 @@ from sqlalchemy import select, and_, insert
 
 from app.database.db import AsyncSession
 from app.database.db import get_db
-from app.models.models import User, Item, Category, item_category
+from app.models.models import Item, Category, item_category
 
 router = APIRouter()
 
