@@ -1,3 +1,4 @@
+import random
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -57,13 +58,18 @@ async def get_items(
 
 
 @router.post("/create_item")
-async def create_item(name: str = "IPhone 17 Pro",
-                      description: str = "Test Description",
-                      price: int = 50000,
+
+def amount_generator():
+    amount = random.randint(1, 32)
+    return amount
+
+async def create_item(name: str = "Enfants Riches Deprimes",
+                      description: str = "Distressed design black t-shirt",
+                      price: int = 128000,
                       availability_status: bool = True,
-                      manufacturer: str = "Apple",
-                      quantity: int = 34,
-                      image: str = "https://www.google.com/url?sa=i&url=https%3A%2F%2Fiphoriya.ru%2Fproduct%2Fapple-iphone-17-pro-1tb-deep-blue&psig=AOvVaw2G9RtQjWq92Ld867O7Z5tn&ust=1762680640661000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCPD9lJ2f4pADFQAAAAAdAAAAABAE",
+                      manufacturer: str = "Enfants Riches Deprimes",
+                      quantity: int = amount_generator(),
+                      image: str = "https://images.vestiairecollective.com/images/resized/w=1246,q=75,f=auto,/produit/schwarz-baumwolle-enfants-riches-deprimes-t-shirts-47839341-1_5.jpg",
                       db: AsyncSession = Depends(get_db)):
     try:
         new_item = Item(
