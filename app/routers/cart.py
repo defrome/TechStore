@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from app.database.db import AsyncSession
 from sqlalchemy import select
 from app.database.db import get_db
@@ -7,7 +7,10 @@ from app.models.models import Cart, Item
 router = APIRouter()
 
 @router.get("/get_cart")
-async def get_user_cart(cart_id: int, db: AsyncSession = Depends(get_db)):
+async def get_user_cart(
+    cart_id: int,
+    db: AsyncSession = Depends(get_db)
+):
     try:
         result = await db.execute(
             select(Cart).where(Cart.id == cart_id)
@@ -110,32 +113,31 @@ async def remove_item_from_cart(
             detail=f"Error removing item from cart: {str(e)}"
         )
 
-@router.post("/cart_add_item")
+@router.post("/cart/add")
 async def add_item(
-    cart_id: int,
+    request: Request,
     item_id: int,
     quantity: int = 1,
     db: AsyncSession = Depends(get_db)
 ):
-    try:
+    session_id = request.state.session_id
 
+    try:
         result = await db.execute(
             select(Cart).where(
-                Cart.id == cart_id,
+                Cart.session_id == session_id,
                 Cart.item_id == item_id
             )
         )
         cart_item = result.scalar_one_or_none()
 
         if cart_item:
-
             cart_item.item_value += quantity
             action = "quantity increased"
             new_quantity = cart_item.item_value
         else:
-
             cart_item = Cart(
-                cart_id=cart_id,
+                session_id=session_id,
                 item_id=item_id,
                 item_value=quantity
             )
@@ -146,8 +148,8 @@ async def add_item(
         await db.commit()
 
         return {
-            "message": f"Item {action} to cart successfully",
-            "cart_id": cart_id,
+            "message": f"Item {action} successfully",
+            "session_id": session_id,
             "item_id": item_id,
             "added_quantity": quantity,
             "new_quantity": new_quantity,
@@ -161,28 +163,50 @@ async def add_item(
             detail=f"Error adding item to cart: {str(e)}"
         )
 
+
 @router.post("/create_cart")
 async def create_cart(
-                      item_id: int,
-                      value: int = 1,
-                      db: AsyncSession = Depends(get_db)):
-    try:
-        new_cart = Cart(
-            item_id=item_id,
-            item_value=value
-        )
+    request: Request,
+    item_id: int,
+    value: int = 1,
+    db: AsyncSession = Depends(get_db)
+):
+    session_id = request.state.session_id
 
-        db.add(new_cart)
+    try:
+        result = await db.execute(
+            select(Cart).where(
+                Cart.session_id == session_id,
+                Cart.item_id == item_id
+            )
+        )
+        cart_item = result.scalar_one_or_none()
+
+        if cart_item:
+            cart_item.item_value += value
+            action = "quantity increased"
+        else:
+            cart_item = Cart(
+                session_id=session_id,
+                item_id=item_id,
+                item_value=value
+            )
+            db.add(cart_item)
+            action = "item added"
+
         await db.commit()
-        await db.refresh(new_cart)
 
         return {
-            "message": "Cart created successfully",
+            "message": f"Cart updated successfully ({action})",
+            "session_id": session_id,
+            "item_id": item_id,
+            "quantity": cart_item.item_value
         }
 
     except Exception as e:
         await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error creating user: {str(e)}"
+            detail=f"Error creating cart: {str(e)}"
         )
+

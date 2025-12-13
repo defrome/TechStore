@@ -17,7 +17,7 @@ class Cart(Base):
     __tablename__ = 'cart_items'
 
     id = Column(Integer, primary_key=True, index=True)
-    session_id = Column(String, index=True, unique=True)
+    session_id = Column(String, index=True)
     item_id = Column(Integer, ForeignKey('Items.id', ondelete="CASCADE"))
     item_value = Column(Integer, default=1)
 
