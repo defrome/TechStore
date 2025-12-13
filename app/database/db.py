@@ -3,7 +3,7 @@ from sqlalchemy.orm import DeclarativeBase
 
 
 
-SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite:///./sql_app.db"
+SQLALCHEMY_DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5432/postgres"
 
 
 
