@@ -12,6 +12,13 @@ item_category = Table(
     Column('category_id', Integer, ForeignKey('categories.id'))
 )
 
+class Admin(Base):
+    __tablename__ = "admins"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    def __repr__(self):
+        return f"Cart(item_id={self.item_id}, quantity={self.item_value})"
 
 class Cart(Base):
     __tablename__ = 'cart_items'

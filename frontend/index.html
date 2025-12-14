@@ -13,11 +13,78 @@
         }
 
         body {
+            --noise-svg: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80'><filter id='n'><feTurbulence baseFrequency='1.1' numOctaves='2' seed='4'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' fill='%23bfbfbf' opacity='0.16'/></svg>");
+
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            color: #000;
-            background: #fff;
+            color: #111;
+            background-color: #f2f2f2; /* light base */
+            background-image: var(--noise-svg);
+            background-repeat: repeat;
+            background-size: 80px 80px; /* denser visible grain */
+            background-attachment: fixed;
+            background-blend-mode: normal;
+            scroll-behavior: smooth; /* restored native smooth scrolling */
+            position: relative;
+
             line-height: 1.4;
         }
+
+        /* Ensure main UI uses the same subtle noise (fainter) so background feels cohesive */
+        .main-content::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background-image: var(--noise-svg);
+            background-repeat: repeat;
+            background-size: 120px 120px;
+            opacity: 0.08;
+            mix-blend-mode: normal;
+        }
+
+        /* PRODUCT CARD textured surface */
+        .product-card {
+            position: relative;
+            background: linear-gradient(180deg, #ffffff 0%, #f8f8f9 100%);
+            border: 1px solid rgba(0,0,0,0.06);
+            padding: 16px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+            overflow: hidden;
+        }
+        .product-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='g'><feTurbulence baseFrequency='0.5' numOctaves='2' seed='9'/></filter><rect width='100%25' height='100%25' filter='url(%23g)' fill='%23ffffff' opacity='0.045'/></svg>");
+            background-repeat: repeat;
+            background-size: 140px 140px;
+        }
+
+        /* Ensure core UI sits above the noise and visually pops */
+        header.header,
+        .main-content,
+        .footer,
+        .categories-sidebar,
+        .cart-sidebar {
+            position: relative;
+            z-index: 10; /* higher than noise */
+            background: rgba(255,255,255,0.98); /* near-white to stand out */
+            border-color: #dcdcdc; /* slightly darker border */
+            box-shadow: 0 12px 36px rgba(0,0,0,0.06);
+        }
+
+        /* Sidebars already have high z-index, increase subtle contrast */
+        .categories-sidebar,
+        .cart-sidebar {
+            z-index: 1000; /* keep above overlay */
+            background: rgba(255,255,255,0.98);
+            border-color: #dedede;
+            box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+        }
+
+        /* Overlay stays above noise but below sidebars when active */
+        .overlay { z-index: 999; }
 
         a {
             text-decoration: none;
@@ -389,14 +456,19 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: #000;
+            background: rgba(0,0,0,0.95);
             color: #fff;
-            padding: 10px 15px;
-            font-size: 11px;
+            padding: 12px 16px;
+            font-size: 12px;
             font-family: monospace;
-            max-width: 300px;
+            max-width: 320px;
             word-break: break-all;
             display: none;
+            border-radius: 6px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.45);
+            /* very high z-index so it sits above overlays/sidebars */
+            z-index: 10050;
+            pointer-events: auto;
         }
 
         .session-info.visible {
@@ -1103,15 +1175,6 @@
                 showStatus('Error clearing cart', 'error');
             }
         }
-
-        // Экспорт функций для консоли
-        window.loadProducts = loadProducts;
-        window.loadCart = loadCart;
-        window.addToCart = addToCart;
-        window.removeFromCart = removeFromCart;
-        window.clearCart = clearCart;
-        window.toggleDebug = toggleDebug;
-        window.filterByCategory = filterByCategory;
     </script>
 </body>
 </html>

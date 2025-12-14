@@ -6,9 +6,9 @@ from app.admin.categories_admin import CategoryAdmin
 from app.admin.items_admin import ItemAdmin
 from app.database.db import Base, engine
 from fastapi import FastAPI
-
 from app.middlewares.create_session import SessionMiddleware
 from app.routers import items, categories, cart, order
+from app.routers import admin as adm
 
 
 @asynccontextmanager
@@ -40,6 +40,7 @@ app.add_middleware(
 )
 
 app.include_router(items.router)
+app.include_router(adm.router)
 app.include_router(categories.router)
 app.include_router(cart.router)
 app.include_router(order.router)
