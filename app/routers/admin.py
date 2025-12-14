@@ -13,9 +13,9 @@ def generate_password(length=12, use_digits=True, use_special=True):
     if length < 4:
         length = 4
 
-    lowercase = string.ascii_lowercase  # a-z
-    uppercase = string.ascii_uppercase  # A-Z
-    digits = string.digits if use_digits else ''  # 0-9
+    lowercase = string.ascii_lowercase
+    uppercase = string.ascii_uppercase
+    digits = string.digits if use_digits else ''
     special = '!@#$%^&*()_+-=[]{}|;:,.<>?' if use_special else ''
 
     all_chars = lowercase + uppercase + digits + special
