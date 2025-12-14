@@ -1,6 +1,7 @@
 import random
 import string
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 from app.database.db import get_db
@@ -66,4 +67,28 @@ async def create_admin(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error creating admin: {str(e)}"
+        )
+
+@router.get("/get_admins")
+async def get_admins(
+        db: AsyncSession = Depends(get_db)
+):
+    try:
+        result = await db.execute(select(Admin))
+        admins = result.scalars().all()
+
+        admin_list = []
+        for a in admins:
+            admin_list.append({
+                "id": a.id,
+                "status": a.status,
+            })
+
+        return {"result": admin_list}
+
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error getting admins: {str(e)}"
         )
