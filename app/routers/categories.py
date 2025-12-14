@@ -108,3 +108,27 @@ async def create_category(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error creating category: {str(e)}"
         )
+
+
+@router.get("/get_categories")
+async def get_categories(db: AsyncSession = Depends(get_db)):
+    try:
+        result = await db.execute(select(Category))
+        cats = result.scalars().all()
+
+        category_list = [
+            {
+                "id": cat.id,
+                "name": cat.name,
+                "description": cat.description
+            } for cat in cats
+        ]
+
+        return {"categories": category_list}
+
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error getting categories: {str(e)}"
+        )
