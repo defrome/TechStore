@@ -16,9 +16,12 @@ class Admin(Base):
     __tablename__ = "admins"
 
     id = Column(Integer, primary_key=True, index=True)
+    password = Column(String(30))
+    login = Column(String(30))
+    status = Column(Boolean, default=False)
 
     def __repr__(self):
-        return f"Cart(item_id={self.item_id}, quantity={self.item_value})"
+        return f"Admin(admin_id={self.id}, status={self.status})"
 
 class Cart(Base):
     __tablename__ = 'cart_items'
