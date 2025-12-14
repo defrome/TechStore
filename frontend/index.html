@@ -29,6 +29,34 @@
             line-height: 1.4;
         }
 
+        /* Intro: simple full-height section (no transitions) */
+        .intro {
+            position: relative; /* part of document flow */
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            color: #111;
+            background: linear-gradient(180deg, #f7f7f7 0%, #efefef 100%);
+        }
+
+        .intro::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background-image: var(--noise-svg);
+            background-repeat: repeat;
+            background-size: 100px 100px;
+            opacity: 0.18; /* subtle but visible light-gray noise */
+            mix-blend-mode: normal;
+        }
+
+        .intro-content { position: relative; text-align: center; z-index: 2; }
+        .intro-title { font-size: 64px; letter-spacing: 6px; margin-bottom: 12px; color: #111; }
+        .intro-hint { color: rgba(0,0,0,0.6); font-size: 13px; margin-top: 6px; }
+
         /* Ensure main UI uses the same subtle noise (fainter) so background feels cohesive */
         .main-content::before {
             content: "";
@@ -553,17 +581,6 @@
             background: #000;
             color: #fff;
         }
-
-        /* FOOTER */
-        .footer {
-            padding: 40px;
-            border-top: 1px solid #eee;
-            text-align: center;
-            font-size: 11px;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
     </style>
 </head>
 <body>
@@ -640,11 +657,6 @@
 
     <!-- STATUS MESSAGE -->
     <div class="status-message" id="statusMessage"></div>
-
-    <!-- FOOTER -->
-    <footer class="footer">
-        INTERNET SHOP © 2025
-    </footer>
 
     <script>
         // Конфигурация
