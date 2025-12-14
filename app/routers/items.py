@@ -11,6 +11,10 @@ from app.models.models import Item, Category, item_category
 
 router = APIRouter()
 
+def amount_generator():
+    amount = random.randint(1, 32)
+    return amount
+
 @router.get("/get_item")
 async def get_items(
         db: AsyncSession = Depends(get_db)
@@ -58,11 +62,6 @@ async def get_items(
 
 
 @router.post("/create_item")
-
-def amount_generator():
-    amount = random.randint(1, 32)
-    return amount
-
 async def create_item(name: str = "Enfants Riches Deprimes",
                       description: str = "Distressed design black t-shirt",
                       price: int = 128000,

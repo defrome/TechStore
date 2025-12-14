@@ -33,7 +33,11 @@ admin = Admin(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://127.0.0.1:8000",    # Бэкенд сам себя
+        "http://localhost:8000",     # Локальный хост
+        "http://localhost:63342",    # WebStorm/PhpStorm
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

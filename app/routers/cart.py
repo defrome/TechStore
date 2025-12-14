@@ -8,12 +8,14 @@ router = APIRouter()
 
 @router.get("/get_cart")
 async def get_user_cart(
-    cart_id: int,
+    request: Request,
     db: AsyncSession = Depends(get_db)
 ):
+    session_id = request.state.session_id
+
     try:
         result = await db.execute(
-            select(Cart).where(Cart.id == cart_id)
+            select(Cart).where(Cart.session_id == session_id)
         )
         cart_items = result.scalars().all()
 
@@ -34,35 +36,35 @@ async def get_user_cart(
                     "total_price": item.price * cart_item.item_value
                 })
 
-        total_cart_price = sum(item["total_price"] for item in cart)
+        total_cart_price = sum(i["total_price"] for i in cart)
 
         return {
-            "cart_id": cart_id,
+            "session_id": session_id,
             "cart_items": cart,
             "total_cart_price": total_cart_price,
             "total_items": len(cart)
         }
 
-    except HTTPException:
-        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error getting user cart: {str(e)}"
         )
 
+
 @router.delete("/remove_item_from_cart")
 async def remove_item_from_cart(
-    user_id: str,
+    request: Request,
     item_id: int,
     quantity: int = 1,
     db: AsyncSession = Depends(get_db)
 ):
-    try:
+    session_id = request.state.session_id
 
+    try:
         result = await db.execute(
             select(Cart).where(
-                Cart.user_id == user_id,
+                Cart.session_id == session_id,
                 Cart.item_id == item_id
             )
         )
@@ -74,34 +76,28 @@ async def remove_item_from_cart(
                 detail="Item not found in cart"
             )
 
-
         if quantity > cart_item.item_value:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Cannot remove {quantity} items. Only {cart_item.item_value} in cart"
+                detail=f"Cannot remove {quantity}. Only {cart_item.item_value} in cart"
             )
 
-
         if quantity == cart_item.item_value:
-
             await db.delete(cart_item)
-            action = "completely removed"
             remaining_quantity = 0
+            action = "completely removed"
         else:
-
             cart_item.item_value -= quantity
-            action = f"quantity decreased by {quantity}"
             remaining_quantity = cart_item.item_value
+            action = f"quantity decreased by {quantity}"
 
         await db.commit()
 
         return {
-            "message": f"Item {action} from cart successfully",
-            "user_id": user_id,
+            "message": f"Item {action} successfully",
+            "session_id": session_id,
             "item_id": item_id,
-            "removed_quantity": quantity,
-            "remaining_quantity": remaining_quantity,
-            "action": action
+            "remaining_quantity": remaining_quantity
         }
 
     except HTTPException:
@@ -112,6 +108,7 @@ async def remove_item_from_cart(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error removing item from cart: {str(e)}"
         )
+
 
 @router.post("/cart/add")
 async def add_item(
@@ -133,8 +130,8 @@ async def add_item(
 
         if cart_item:
             cart_item.item_value += quantity
-            action = "quantity increased"
             new_quantity = cart_item.item_value
+            action = "quantity increased"
         else:
             cart_item = Cart(
                 session_id=session_id,
@@ -142,8 +139,8 @@ async def add_item(
                 item_value=quantity
             )
             db.add(cart_item)
-            action = "new item added"
             new_quantity = quantity
+            action = "new item added"
 
         await db.commit()
 
@@ -151,9 +148,7 @@ async def add_item(
             "message": f"Item {action} successfully",
             "session_id": session_id,
             "item_id": item_id,
-            "added_quantity": quantity,
-            "new_quantity": new_quantity,
-            "action": action
+            "quantity": new_quantity
         }
 
     except Exception as e:
@@ -161,52 +156,5 @@ async def add_item(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error adding item to cart: {str(e)}"
-        )
-
-
-@router.post("/create_cart")
-async def create_cart(
-    request: Request,
-    item_id: int,
-    value: int = 1,
-    db: AsyncSession = Depends(get_db)
-):
-    session_id = request.state.session_id
-
-    try:
-        result = await db.execute(
-            select(Cart).where(
-                Cart.session_id == session_id,
-                Cart.item_id == item_id
-            )
-        )
-        cart_item = result.scalar_one_or_none()
-
-        if cart_item:
-            cart_item.item_value += value
-            action = "quantity increased"
-        else:
-            cart_item = Cart(
-                session_id=session_id,
-                item_id=item_id,
-                item_value=value
-            )
-            db.add(cart_item)
-            action = "item added"
-
-        await db.commit()
-
-        return {
-            "message": f"Cart updated successfully ({action})",
-            "session_id": session_id,
-            "item_id": item_id,
-            "quantity": cart_item.item_value
-        }
-
-    except Exception as e:
-        await db.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error creating cart: {str(e)}"
         )
 
