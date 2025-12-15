@@ -208,10 +208,38 @@ async def accept_order(
             detail=f"Error accepting order: {str(e)}"
         )
 
+@router.post("/reject_order")
+async def reject_order(
+    order_id: int,  # FastAPI автоматически конвертирует
+    db: AsyncSession = Depends(get_db)
+):
+    try:
+        result = await db.execute(
+            select(Order).where(Order.id == order_id)
+        )
+        order = result.scalar_one_or_none()
 
+        if not order:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Order with id {order_id} not found"
+            )
+
+        order.status = "rejected"
+        await db.commit()
+        await db.refresh(order)
+
+        return {
+            "message": f"Order {order_id} accepted successfully",
+            "order_id": order.id,
+            "new_status": order.status
+        }
+
+    except HTTPException:
+        raise
     except Exception as e:
+        await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error getting order: {str(e)}"
+            detail=f"Error accepting order: {str(e)}"
         )
-
