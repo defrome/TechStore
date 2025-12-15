@@ -9,12 +9,15 @@ router = APIRouter()
 
 @router.post("/create_order", status_code=status.HTTP_201_CREATED)
 async def create_order(
-        cart_id: int,
+        address: str = "Ленинградское шоссе, 112",
+        telephone: str = "+79884563489",
+        email: str = "andreyandreev@gmail.com",
+        session_id = str,
         db: AsyncSession = Depends(get_db)
 ):
     try:
         cart_result = await db.execute(
-            select(Cart).where(Cart.id == cart_id)
+            select(Cart).where(Cart.session_id == session_id)
         )
         cart_items = cart_result.scalars().all()
 
@@ -50,10 +53,13 @@ async def create_order(
                 detail={"unavailable_items": unavailable_items}
             )
 
+        # Order model does not store cart_session; keep session_id externally and create order normally
         new_order = Order(
-            cart_id=cart_id,
             total_amount=0,
-            total_items=0
+            total_items=0,
+            address=address,
+            telephone=telephone,
+            email=email
         )
 
         db.add(new_order)
@@ -92,7 +98,7 @@ async def create_order(
         new_order.total_items = total_items
 
         await db.execute(
-            delete(Cart).where(Cart.id == cart_id)
+            delete(Cart).where(Cart.session_id == session_id)
         )
 
         await db.commit()
@@ -101,7 +107,10 @@ async def create_order(
         return {
             "message": "Order created successfully",
             "order_id": new_order.id,
-            "cart_id": cart_id,
+            "session_id": session_id,
+            "address": address,
+            "telephone": telephone,
+            "email": email,
             "total_amount": total_amount,
             "total_items": total_items,
             "items": order_items_list,
