@@ -5,248 +5,1109 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Admin — TechStore</title>
     <style>
-        :root{--bg:#f6f6f7;--card:#fff;--muted:#666;--accent:#000}
-        /* Layout */
-        body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; background:var(--bg); margin:0;padding:24px;color:#111}
-        .container{max-width:980px;margin:24px auto}
-        .card{background:var(--card);padding:18px;border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,0.06);margin-bottom:18px}
-
-        /* Typography */
-        h1{font-size:20px;margin:0 0 12px}
-        label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
-        .small{font-size:12px;color:var(--muted)}
-        .muted{color:var(--muted);font-size:13px}
-
-        /* Inputs */
-        input[type=text],input[type=password]{width:100%;padding:10px 12px;height:44px;border:1px solid #e9e9e9;border-radius:8px;margin-bottom:12px;font-size:14px}
-
-        /* Buttons: unified and consistent */
-        .btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;border-radius:8px;font-weight:600;cursor:pointer;font-size:14px;border:0;min-height:44px}
-        button, .btn{font-family:inherit}
-        .btn.primary{background:var(--accent);color:#fff;border:0}
-        .btn.secondary{background:#fff;color:var(--accent);border:1px solid #e5e5e5}
-
-        /* Rows and actions */
-        .row{display:flex;gap:12px}
-        .row .btn{flex:1;min-width:0}
-        .actions{display:flex;gap:8px;align-items:center}
-        .actions .btn{flex:0 0 auto;min-width:90px}
-        /* helper to align a control to the right inside a flex row */
-        .align-right{margin-left:auto}
-
-        /* Grid split */
-        .split{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-
-        /* Tables and lists */
-        table{width:100%;border-collapse:collapse;font-size:13px}
-        th,td{padding:8px;border-bottom:1px solid #f1f1f1;text-align:left}
-
-        .notice{padding:8px 12px;border-radius:6px;background:#fff8d6;border:1px solid #ffe8a2;color:#6b4b00}
+        :root {
+            --bg: #f5f7fa;
+            --card: #ffffff;
+            --muted: #6c757d;
+            --accent: #2c3e50;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --border: #e1e5eb;
+            --hover: #f8f9fa;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: var(--card);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+        }
+        
+        h1, h2, h3 {
+            margin-top: 0;
+            color: var(--accent);
+        }
+        
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        h2 {
+            font-size: 22px;
+            margin-bottom: 16px;
+        }
+        
+        h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        /* Статусы */
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-accepted { background: #d4edda; color: #155724; }
+        .status-rejected { background: #f8d7da; color: #721c24; }
+        .status-processing { background: #cce5ff; color: #004085; }
+        .status-completed { background: #d1ecf1; color: #0c5460; }
+        
+        /* Кнопки */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            gap: 8px;
+            height: 40px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--accent);
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 13px;
+            height: 32px;
+        }
+        
+        /* Формы */
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--accent);
+            font-size: 14px;
+        }
+        
+        input[type="text"],
+        input[type="password"],
+        input[type="email"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+        }
+        
+        /* Сетка */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        
+        /* Списки и таблицы */
+        .orders-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .order-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            background: white;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .order-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        
+        .order-card.expanded {
+            border-color: var(--accent);
+            background: #f8fafc;
+        }
+        
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .order-id {
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 16px;
+        }
+        
+        .order-date {
+            color: var(--muted);
+            font-size: 13px;
+        }
+        
+        .order-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .order-amount {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .order-items {
+            color: var(--muted);
+            font-size: 14px;
+        }
+        
+        .order-details {
+            display: none;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+            margin-top: 16px;
+        }
+        
+        .order-details.expanded {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .detail-row {
+            display: flex;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            min-width: 140px;
+            color: var(--accent);
+        }
+        
+        .detail-value {
+            flex: 1;
+        }
+        
+        .order-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        
+        /* Админы */
+        .admin-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .admin-info {
+            font-size: 14px;
+        }
+        
+        .admin-id {
+            font-weight: 600;
+            color: var(--accent);
+        }
+        
+        .admin-status {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: #e9ecef;
+        }
+        
+        /* Уведомления */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        /* Утилиты */
+        .mt-2 { margin-top: 16px; }
+        .mt-3 { margin-top: 24px; }
+        .mb-2 { margin-bottom: 16px; }
+        .mb-3 { margin-bottom: 24px; }
+        .d-none { display: none; }
+        .d-flex { display: flex; }
+        .align-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 16px; }
+        .w-100 { width: 100%; }
+        .text-muted { color: var(--muted); }
+        .text-center { text-align: center; }
+        .small { font-size: 13px; }
+        
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            margin-bottom: 20px;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--muted);
+        }
+        
+        /* Фильтры */
+        .filters {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 6px 16px;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        
+        .filter-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .filter-btn:hover:not(.active) {
+            background: var(--hover);
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 1200px) {
+            .grid-3 { grid-template-columns: 1fr 1fr; }
+        }
+        
+        @media (max-width: 768px) {
+            .grid-2,
+            .grid-3 { grid-template-columns: 1fr; }
+            .header { flex-direction: column; align-items: flex-start; gap: 16px; }
+            .order-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .order-summary { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .filters { flex-wrap: wrap; }
+            .detail-row { flex-direction: column; gap: 4px; }
+            .detail-label { min-width: auto; }
+        }
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="card" id="loginCard">
-        <h1>Админ панель — вход</h1>
-        <div class="muted">Войдите под учётной записью администратора (HTTP Basic)</div>
-        <div style="margin-top:12px">
-            <label for="adminUser">Логин</label>
-            <input id="adminUser" type="text" placeholder="admin" value="admin" />
-            <label for="adminPass">Пароль</label>
-            <input id="adminPass" type="password" placeholder="password" />
-            <div class="row">
-                <button id="loginBtn" class="btn primary">Войти</button>
-                <button id="clearBtn" class="btn secondary">Очистить</button>
+    <div class="container">
+        <!-- Экран входа -->
+        <div class="card" id="loginCard">
+            <h1 class="text-center">🔐 Панель администратора TechStore</h1>
+            <p class="text-center text-muted mb-3">Войдите под учётной записью администратора</p>
+            
+            <div id="loginAlert" class="alert"></div>
+            
+            <div class="form-group">
+                <label for="adminUser">Логин</label>
+                <input id="adminUser" type="text" placeholder="admin" value="admin" />
             </div>
-            <div style="height:8px"></div>
-            <div id="loginMsg" class="small muted"></div>
-        </div>
-    </div>
-
-    <div class="card" id="dashboardCard" style="display:none">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-            <h1>Панель администратора</h1>
-            <div class="actions">
-                <button id="logoutBtn" class="btn secondary">Выйти</button>
+            
+            <div class="form-group">
+                <label for="adminPass">Пароль</label>
+                <input id="adminPass" type="password" placeholder="Введите пароль" />
+            </div>
+            
+            <div class="d-flex gap-2 mt-3">
+                <button id="loginBtn" class="btn btn-primary w-100">Войти</button>
+                <button id="clearBtn" class="btn btn-outline">Очистить</button>
+            </div>
+            
+            <div class="text-center mt-3 text-muted small">
+                Используйте данные тестового аккаунта или создайте нового администратора
             </div>
         </div>
 
-        <div class="split" style="margin-top:12px">
-            <div>
-                <h3 style="margin:0 0 8px">Администраторы</h3>
-                <div id="adminsArea" class="card" style="padding:10px"></div>
-                <div style="margin-top:8px">
-                    <label for="newAdminLogin">Создать нового администратора (логин)</label>
-                    <input id="newAdminLogin" type="text" placeholder="username" />
-                    <div style="margin-top:8px" class="row">
-                        <button id="createAdminBtn" class="btn primary">Создать</button>
-                        <button id="refreshAdminsBtn" class="btn secondary">Обновить список</button>
+        <!-- Основная панель -->
+        <div class="card d-none" id="dashboardCard">
+            <!-- Шапка -->
+            <div class="header">
+                <div>
+                    <h1>👨‍💼 Панель управления TechStore</h1>
+                    <p class="text-muted small">Управление заказами и администраторами</p>
+                </div>
+                <div class="d-flex align-center gap-2">
+                    <span id="currentUser" class="text-muted"></span>
+                    <button id="logoutBtn" class="btn btn-outline">Выйти</button>
+                </div>
+            </div>
+
+            <!-- Статистика -->
+            <div class="grid-3 mb-3">
+                <div class="card">
+                    <h3>📊 Всего заказов</h3>
+                    <div class="order-amount" id="totalOrders">0</div>
+                </div>
+                <div class="card">
+                    <h3>⏳ Ожидают</h3>
+                    <div class="order-amount" id="pendingOrders">0</div>
+                </div>
+                <div class="card">
+                    <h3>✅ Принятые</h3>
+                    <div class="order-amount" id="acceptedOrders">0</div>
+                </div>
+            </div>
+
+            <!-- Основной контент -->
+            <div class="grid-2">
+                <!-- Левая колонка: Заказы -->
+                <div>
+                    <div class="d-flex justify-between align-center mb-2">
+                        <h2>🛒 Заказы</h2>
+                        <div class="d-flex gap-2">
+                            <button id="refreshOrdersBtn" class="btn btn-primary">
+                                <span>🔄 Обновить</span>
+                            </button>
+                        </div>
                     </div>
-                    <div id="createMsg" class="small muted" style="margin-top:8px"></div>
+                    
+                    <!-- Фильтры по статусу -->
+                    <div class="filters mb-3">
+                        <button class="filter-btn active" data-status="all">Все</button>
+                        <button class="filter-btn" data-status="pending">Ожидают</button>
+                        <button class="filter-btn" data-status="accepted">Принятые</button>
+                        <button class="filter-btn" data-status="rejected">Отклоненные</button>
+                    </div>
+                    
+                    <div id="ordersArea" class="orders-list"></div>
+                    
+                    <div id="ordersLoading" class="text-center mt-3">
+                        <div class="text-muted">Загрузка заказов...</div>
+                    </div>
                 </div>
-            </div>
 
-            <div>
-                <h3 style="margin:0 0 8px">Заказы</h3>
-                <div id="ordersArea" class="card" style="padding:10px;max-height:460px;overflow:auto"></div>
-                <div style="margin-top:8px" class="small muted">Нажмите "Обновить" чтобы получить последние заказы</div>
-                <div style="margin-top:8px" class="row">
-                    <button id="refreshOrdersBtn" class="btn primary align-right">Обновить</button>
+                <!-- Правая колонка: Админы -->
+                <div>
+                    <div class="d-flex justify-between align-center mb-2">
+                        <h2>👥 Администраторы</h2>
+                        <button id="refreshAdminsBtn" class="btn btn-outline btn-sm">Обновить</button>
+                    </div>
+                    
+                    <div id="adminsArea" class="mb-3"></div>
+                    
+                    <div class="card">
+                        <h3>Создать администратора</h3>
+                        <div class="form-group">
+                            <label for="newAdminLogin">Имя пользователя</label>
+                            <input id="newAdminLogin" type="text" placeholder="Введите логин" />
+                        </div>
+                        
+                        <div id="createAlert" class="alert"></div>
+                        
+                        <div class="d-flex gap-2">
+                            <button id="createAdminBtn" class="btn btn-primary">Создать</button>
+                            <button id="generateUsernameBtn" class="btn btn-outline">Сгенерировать</button>
+                        </div>
+                        
+                        <div class="mt-2 text-muted small">
+                            Пароль будет сгенерирован автоматически и показан один раз
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
+        <!-- Модальное окно с деталями заказа -->
+        <div id="orderModal" class="modal">
+            <div class="modal-content">
+                <button class="modal-close" id="closeModal">&times;</button>
+                <div class="modal-header">
+                    <h2>Детали заказа #<span id="modalOrderId"></span></h2>
+                    <div id="modalOrderStatus" class="status mt-2"></div>
+                </div>
+                
+                <div id="modalOrderDetails"></div>
+                
+                <div class="order-actions mt-3" id="modalOrderActions">
+                    <!-- Кнопки действий будут добавлены динамически -->
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div id="debug" style="margin-top:12px"></div>
-</div>
+    <script>
+        const API = location.origin.includes('file:') ? 'http://localhost:8000' : location.origin.replace(/:\d+$/, ':8000');
+        let currentUser = '';
+        let allOrders = [];
 
-<script>
-const API = location.origin.includes('file:') ? 'http://localhost:8000' : location.origin.replace(/:\d+$/, ':8000');
-// simple auth storage
-function authToken() { return localStorage.getItem('adminAuth') || '' }
-function setAuthToken(v){ if(v) localStorage.setItem('adminAuth', v); else localStorage.removeItem('adminAuth') }
-
-function authFetch(path, opts={}){
-    opts.headers = opts.headers || {};
-    const token = authToken();
-    if(token) opts.headers['Authorization'] = 'Basic ' + token;
-    opts.credentials = opts.credentials || 'include';
-    return fetch(API + path, opts);
-}
-
-async function tryLogin(username, password){
-    // Если переданы username/password — используем их и сохраняем token.
-    // Если не переданы (undefined) — просто валидируем уже сохранённый token в localStorage и не перезаписываем его.
-    if (typeof username !== 'undefined' && typeof password !== 'undefined' && username !== '') {
-        const token = btoa(`${username}:${password}`);
-        setAuthToken(token);
-    }
-
-    try{
-        const res = await authFetch('/admin/dashboard');
-        if(res.status === 401){
-            // Некорректные данные — удалить токен и вернуть ошибку
-            setAuthToken('');
-            throw new Error('Unauthorized');
+        // Управление авторизацией
+        function authToken() { 
+            return localStorage.getItem('adminAuth') || ''; 
         }
-        const data = await res.json();
-        return {ok:true,data};
-    }catch(e){
-        // На всякий случай очищаем токен при ошибке проверки
-        setAuthToken('');
-        return {ok:false,error:e.message};
-    }
-}
-
-// UI helpers
-function showLoginMsg(text){ document.getElementById('loginMsg').textContent = text }
-function showCreateMsg(text){ document.getElementById('createMsg').textContent = text }
-
-// Load lists
-async function loadAdmins(){
-    try{
-        const res = await authFetch('/get_admins');
-        if(res.status===401) { throw new Error('Unauthorized') }
-        const js = await res.json();
-        const area = document.getElementById('adminsArea');
-        const list = (js.result || []).map(a => `<div class="small">ID: ${a.id} — status: ${a.status}</div>`).join('');
-        area.innerHTML = list || '<div class="small muted">Нет администраторов</div>';
-    }catch(e){
-        document.getElementById('adminsArea').innerHTML = `<div class="small muted">Ошибка: ${e.message}</div>`;
-    }
-}
-
-async function loadOrders(){
-    try{
-        const res = await authFetch('/admin_orders');
-        if(res.status===401) throw new Error('Unauthorized');
-        const js = await res.json();
-        const area = document.getElementById('ordersArea');
-        const rows = (js.orders || []).map(o => `
-            <div style="padding:8px;border-bottom:1px solid #f2f2f2">
-                <div class="small">ID: ${o.id} — ${o.created_at}</div>
-                <div><strong>${o.total_items} items</strong> — ${o.total_amount} ₽</div>
-                <div class="small">status: ${o.status}</div>
-            </div>
-        `).join('');
-        area.innerHTML = rows || '<div class="small muted">Нет заказов</div>';
-    }catch(e){
-        document.getElementById('ordersArea').innerHTML = `<div class="small muted">Ошибка: ${e.message}</div>`;
-    }
-}
-
-async function createAdmin(username){
-    try{
-        const res = await authFetch(`/create_admin?username=${encodeURIComponent(username)}`, {method:'POST'});
-        if(res.status===401) throw new Error('Unauthorized');
-        const js = await res.json();
-        return {ok:true, data: js};
-    }catch(e){ return {ok:false, error:e.message} }
-}
-
-// Login flow
-document.getElementById('loginBtn').addEventListener('click', async ()=>{
-    const user = document.getElementById('adminUser').value.trim();
-    const pass = document.getElementById('adminPass').value;
-    showLoginMsg('Авторизация...');
-    const r = await tryLogin(user,pass);
-    if(r.ok){
-        showLoginMsg('Успешно');
-        document.getElementById('loginCard').style.display='none';
-        document.getElementById('dashboardCard').style.display='block';
-        await loadAdmins();
-        await loadOrders();
-    }else{
-        showLoginMsg('Ошибка: ' + (r.error||'auth failed'));
-    }
-});
-
-document.getElementById('clearBtn').addEventListener('click', ()=>{
-    document.getElementById('adminUser').value='';
-    document.getElementById('adminPass').value='';
-    showLoginMsg('');
-});
-
-// logout
-document.getElementById('logoutBtn').addEventListener('click', ()=>{
-    setAuthToken('');
-    document.getElementById('dashboardCard').style.display='none';
-    document.getElementById('loginCard').style.display='block';
-    showLoginMsg('Вы вышли');
-});
-
-// create admin
-document.getElementById('createAdminBtn').addEventListener('click', async ()=>{
-    const name = document.getElementById('newAdminLogin').value.trim();
-    if(!name){ showCreateMsg('Введите имя'); return }
-    showCreateMsg('Создание...');
-    const res = await createAdmin(name);
-    if(res.ok){ showCreateMsg('Создан admin id='+ (res.data && res.data.admin_id)); loadAdmins(); }
-    else showCreateMsg('Ошибка: '+ (res.error || 'create failed'));
-});
-
-document.getElementById('refreshAdminsBtn').addEventListener('click', loadAdmins);
-document.getElementById('refreshOrdersBtn').addEventListener('click', loadOrders);
-
-// try restore session
-(function(){
-    if(authToken()){
-        // validate silently using existing token (do not pass credentials)
-        tryLogin().then(r=>{
-            if(r.ok){
-                document.getElementById('loginCard').style.display='none';
-                document.getElementById('dashboardCard').style.display='block';
-                loadAdmins();
-                loadOrders();
+        
+        function setAuthToken(v){ 
+            if(v) {
+                localStorage.setItem('adminAuth', v);
             } else {
-                // invalid token — ensure cleared
-                setAuthToken('');
+                localStorage.removeItem('adminAuth');
             }
-        }).catch(()=>{ setAuthToken(''); });
-    }
-})();
+        }
 
-</script>
+        async function authFetch(path, opts = {}){
+            opts.headers = opts.headers || {};
+            const token = authToken();
+            if(token) {
+                opts.headers['Authorization'] = 'Basic ' + token;
+            }
+            opts.credentials = opts.credentials || 'include';
+            return fetch(API + path, opts).catch(err => {
+                console.error('Network error:', err);
+                throw err;
+            });
+        }
+
+        // Попытка входа
+        async function tryLogin(username, password){
+            if (username && password) {
+                const token = btoa(`${username}:${password}`);
+                setAuthToken(token);
+                currentUser = username;
+            }
+
+            try {
+                const res = await authFetch('/admin/dashboard');
+                if(res.status === 401){
+                    setAuthToken('');
+                    throw new Error('Неверный логин или пароль');
+                }
+                const data = await res.json();
+                return {ok: true, data};
+            } catch(e) {
+                setAuthToken('');
+                return {ok: false, error: e.message};
+            }
+        }
+
+        // Показать уведомление
+        function showAlert(elementId, message, type = 'info') {
+            const alert = document.getElementById(elementId);
+            alert.textContent = message;
+            alert.className = `alert alert-${type}`;
+            alert.style.display = 'block';
+            
+            if (type !== 'error') {
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        // Загрузка администраторов
+        async function loadAdmins(){
+            try {
+                const res = await authFetch('/get_admins');
+                if(res.status === 401) {
+                    throw new Error('Требуется авторизация');
+                }
+                const data = await res.json();
+                const admins = data.result || [];
+                
+                const area = document.getElementById('adminsArea');
+                if (admins.length === 0) {
+                    area.innerHTML = '<div class="text-muted text-center">Нет администраторов</div>';
+                    return;
+                }
+                
+                const html = admins.map(admin => `
+                    <div class="admin-card">
+                        <div class="admin-info">
+                            <div class="admin-id">ID: ${admin.id}</div>
+                            <div class="small text-muted">Статус: ${admin.status ? 'Активен' : 'Неактивен'}</div>
+                        </div>
+                        <span class="admin-status ${admin.status ? 'status-accepted' : 'status-rejected'}">
+                            ${admin.status ? '✓' : '✗'}
+                        </span>
+                    </div>
+                `).join('');
+                
+                area.innerHTML = html;
+            } catch(e) {
+                document.getElementById('adminsArea').innerHTML = 
+                    `<div class="alert alert-error">Ошибка загрузки: ${e.message}</div>`;
+            }
+        }
+
+        // Загрузка заказов
+        async function loadOrders(){
+            const loading = document.getElementById('ordersLoading');
+            loading.style.display = 'block';
+            
+            try {
+                const res = await authFetch('/admin_orders');
+                if(res.status === 401) {
+                    throw new Error('Требуется авторизация');
+                }
+                const data = await res.json();
+                allOrders = data.orders || [];
+                renderOrders();
+                updateStats();
+            } catch(e) {
+                document.getElementById('ordersArea').innerHTML = 
+                    `<div class="alert alert-error">Ошибка загрузки заказов: ${e.message}</div>`;
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        // Обновление статистики
+        function updateStats() {
+            const total = allOrders.length;
+            const pending = allOrders.filter(o => o.status === 'pending').length;
+            const accepted = allOrders.filter(o => o.status === 'accepted').length;
+            
+            document.getElementById('totalOrders').textContent = total;
+            document.getElementById('pendingOrders').textContent = pending;
+            document.getElementById('acceptedOrders').textContent = accepted;
+        }
+
+        // Отображение заказов с фильтрацией
+        function renderOrders(filterStatus = 'all') {
+            const area = document.getElementById('ordersArea');
+            
+            if (allOrders.length === 0) {
+                area.innerHTML = '<div class="text-muted text-center">Нет заказов</div>';
+                return;
+            }
+            
+            // Фильтрация заказов
+            let filteredOrders = allOrders;
+            if (filterStatus !== 'all') {
+                filteredOrders = allOrders.filter(order => order.status === filterStatus);
+            }
+            
+            // Сортировка по дате (новые сверху)
+            filteredOrders.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            
+            const html = filteredOrders.map(order => {
+                const date = new Date(order.created_at).toLocaleString('ru-RU');
+                const statusClass = `status status-${order.status}`;
+                
+                return `
+                    <div class="order-card" data-order-id="${order.id}">
+                        <div class="order-header">
+                            <div class="order-id">Заказ #${order.id}</div>
+                            <span class="${statusClass}">${getStatusText(order.status)}</span>
+                        </div>
+                        
+                        <div class="order-summary">
+                            <div class="order-amount">${order.total_amount} ₽</div>
+                            <div class="order-items">${order.total_items} товаров</div>
+                        </div>
+                        
+                        <div class="text-muted small order-date">${date}</div>
+                        
+                        <div class="order-actions">
+                            <button class="btn btn-sm btn-outline view-details" data-order-id="${order.id}">
+                                👁 Подробнее
+                            </button>
+                            ${order.status === 'pending' ? `
+                                <button class="btn btn-sm btn-success accept-order" data-order-id="${order.id}">
+                                    ✓ Принять
+                                </button>
+                                <button class="btn btn-sm btn-danger reject-order" data-order-id="${order.id}">
+                                    ✗ Отклонить
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            area.innerHTML = html;
+            
+            // Добавляем обработчики событий
+            document.querySelectorAll('.view-details').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const orderId = btn.dataset.orderId;
+                    showOrderDetails(orderId);
+                });
+            });
+            
+            document.querySelectorAll('.accept-order').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const orderId = btn.dataset.orderId;
+                    acceptOrder(orderId);
+                });
+            });
+            
+            document.querySelectorAll('.reject-order').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const orderId = btn.dataset.orderId;
+                    rejectOrder(orderId);
+                });
+            });
+        }
+
+        // Получение текста статуса
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': 'Ожидает',
+                'accepted': 'Принят',
+                'rejected': 'Отклонен',
+                'processing': 'В обработке',
+                'completed': 'Завершен'
+            };
+            return statusMap[status] || status;
+        }
+
+        // Показать детали заказа в модальном окне
+        async function showOrderDetails(orderId) {
+            const order = allOrders.find(o => o.id == orderId);
+            if (!order) return;
+            
+            document.getElementById('modalOrderId').textContent = orderId;
+            document.getElementById('modalOrderStatus').textContent = getStatusText(order.status);
+            document.getElementById('modalOrderStatus').className = `status status-${order.status}`;
+            
+            const date = new Date(order.created_at).toLocaleString('ru-RU');
+            
+            const detailsHtml = `
+                <div class="detail-row">
+                    <div class="detail-label">Дата создания:</div>
+                    <div class="detail-value">${date}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Сумма заказа:</div>
+                    <div class="detail-value"><strong>${order.total_amount} ₽</strong></div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Количество товаров:</div>
+                    <div class="detail-value">${order.total_items}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Статус:</div>
+                    <div class="detail-value"><span class="status status-${order.status}">${getStatusText(order.status)}</span></div>
+                </div>
+                ${order.address ? `
+                <div class="detail-row">
+                    <div class="detail-label">Адрес доставки:</div>
+                    <div class="detail-value">${order.address}</div>
+                </div>` : ''}
+                ${order.telephone ? `
+                <div class="detail-row">
+                    <div class="detail-label">Телефон:</div>
+                    <div class="detail-value">${order.telephone}</div>
+                </div>` : ''}
+                ${order.email ? `
+                <div class="detail-row">
+                    <div class="detail-label">Email:</div>
+                    <div class="detail-value">${order.email}</div>
+                </div>` : ''}
+            `;
+            
+            document.getElementById('modalOrderDetails').innerHTML = detailsHtml;
+            
+            // Кнопки действий
+            let actionsHtml = '';
+            if (order.status === 'pending') {
+                actionsHtml = `
+                    <button class="btn btn-success" id="modalAcceptBtn" data-order-id="${orderId}">✓ Принять заказ</button>
+                    <button class="btn btn-danger" id="modalRejectBtn" data-order-id="${orderId}">✗ Отклонить заказ</button>
+                `;
+            } else if (order.status === 'accepted') {
+                actionsHtml = `<div class="text-muted">Заказ уже принят</div>`;
+            } else if (order.status === 'rejected') {
+                actionsHtml = `<div class="text-muted">Заказ отклонен</div>`;
+            }
+            
+            document.getElementById('modalOrderActions').innerHTML = actionsHtml;
+            
+            // Добавляем обработчики для кнопок в модальном окне
+            if (document.getElementById('modalAcceptBtn')) {
+                document.getElementById('modalAcceptBtn').addEventListener('click', () => {
+                    acceptOrder(orderId);
+                    document.getElementById('orderModal').style.display = 'none';
+                });
+            }
+            
+            if (document.getElementById('modalRejectBtn')) {
+                document.getElementById('modalRejectBtn').addEventListener('click', () => {
+                    rejectOrder(orderId);
+                    document.getElementById('orderModal').style.display = 'none';
+                });
+            }
+            
+            // Показываем модальное окно
+            document.getElementById('orderModal').style.display = 'flex';
+        }
+
+        // Принять заказ
+        async function acceptOrder(orderId) {
+            if (!confirm(`Вы уверены, что хотите принять заказ #${orderId}?`)) return;
+            
+            try {
+                const res = await authFetch(`/accept_order?order_id=${orderId}`, {
+                    method: 'POST'
+                });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    showAlert('loginAlert', `Заказ #${orderId} принят успешно`, 'success');
+                    
+                    // Обновляем статус в локальном списке
+                    const order = allOrders.find(o => o.id == orderId);
+                    if (order) order.status = 'accepted';
+                    
+                    // Перерисовываем заказы
+                    const activeFilter = document.querySelector('.filter-btn.active').dataset.status;
+                    renderOrders(activeFilter);
+                    updateStats();
+                } else {
+                    const error = await res.json();
+                    throw new Error(error.detail || 'Ошибка при принятии заказа');
+                }
+            } catch(e) {
+                showAlert('loginAlert', `Ошибка: ${e.message}`, 'error');
+            }
+        }
+
+        // Отклонить заказ
+        async function rejectOrder(orderId) {
+            if (!confirm(`Вы уверены, что хотите отклонить заказ #${orderId}?`)) return;
+            
+            try {
+                const res = await authFetch(`/reject_order?order_id=${orderId}`, {
+                    method: 'POST'
+                });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    showAlert('loginAlert', `Заказ #${orderId} отклонен`, 'success');
+                    
+                    // Обновляем статус в локальном списке
+                    const order = allOrders.find(o => o.id == orderId);
+                    if (order) order.status = 'rejected';
+                    
+                    // Перерисовываем заказы
+                    const activeFilter = document.querySelector('.filter-btn.active').dataset.status;
+                    renderOrders(activeFilter);
+                    updateStats();
+                } else {
+                    const error = await res.json();
+                    throw new Error(error.detail || 'Ошибка при отклонении заказа');
+                }
+            } catch(e) {
+                showAlert('loginAlert', `Ошибка: ${e.message}`, 'error');
+            }
+        }
+
+        // Создать администратора
+        async function createAdmin(username) {
+            try {
+                const res = await authFetch(`/create_admin?username=${encodeURIComponent(username)}`, {
+                    method: 'POST'
+                });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    showAlert('createAlert', `Администратор создан. ID: ${data.admin_id}`, 'success');
+                    loadAdmins();
+                    
+                    // Очищаем поле ввода
+                    document.getElementById('newAdminLogin').value = '';
+                    
+                    return {ok: true, data};
+                } else {
+                    const error = await res.json();
+                    throw new Error(error.detail || 'Ошибка при создании администратора');
+                }
+            } catch(e) {
+                showAlert('createAlert', `Ошибка: ${e.message}`, 'error');
+                return {ok: false, error: e.message};
+            }
+        }
+
+        // Генерация случайного имени пользователя
+        function generateUsername() {
+            const adjectives = ['admin', 'manager', 'super', 'tech', 'store', 'support', 'master', 'control'];
+            const nouns = ['user', 'account', 'admin', 'manager', 'operator', 'assistant'];
+            const randomNum = Math.floor(Math.random() * 1000);
+            const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+            const noun = nouns[Math.floor(Math.random() * nouns.length)];
+            return `${adj}_${noun}_${randomNum}`;
+        }
+
+        // Инициализация событий
+        document.addEventListener('DOMContentLoaded', () => {
+            // Кнопка входа
+            document.getElementById('loginBtn').addEventListener('click', async () => {
+                const user = document.getElementById('adminUser').value.trim();
+                const pass = document.getElementById('adminPass').value;
+                
+                if (!user || !pass) {
+                    showAlert('loginAlert', 'Введите логин и пароль', 'error');
+                    return;
+                }
+                
+                showAlert('loginAlert', 'Авторизация...', 'info');
+                const result = await tryLogin(user, pass);
+                
+                if (result.ok) {
+                    showAlert('loginAlert', 'Успешный вход!', 'success');
+                    document.getElementById('loginCard').style.display = 'none';
+                    document.getElementById('dashboardCard').style.display = 'block';
+                    document.getElementById('currentUser').textContent = `Пользователь: ${user}`;
+                    
+                    await loadAdmins();
+                    await loadOrders();
+                } else {
+                    showAlert('loginAlert', `Ошибка: ${result.error}`, 'error');
+                }
+            });
+
+            // Очистка формы
+            document.getElementById('clearBtn').addEventListener('click', () => {
+                document.getElementById('adminUser').value = '';
+                document.getElementById('adminPass').value = '';
+                document.getElementById('loginAlert').style.display = 'none';
+            });
+
+            // Выход
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                setAuthToken('');
+                currentUser = '';
+                document.getElementById('dashboardCard').style.display = 'none';
+                document.getElementById('loginCard').style.display = 'block';
+                showAlert('loginAlert', 'Вы вышли из системы', 'info');
+            });
+
+            // Создание администратора
+            document.getElementById('createAdminBtn').addEventListener('click', async () => {
+                const username = document.getElementById('newAdminLogin').value.trim();
+                if (!username) {
+                    showAlert('createAlert', 'Введите имя пользователя', 'error');
+                    return;
+                }
+                
+                await createAdmin(username);
+            });
+
+            // Генерация имени пользователя
+            document.getElementById('generateUsernameBtn').addEventListener('click', () => {
+                document.getElementById('newAdminLogin').value = generateUsername();
+            });
+
+            // Обновление списков
+            document.getElementById('refreshAdminsBtn').addEventListener('click', loadAdmins);
+            document.getElementById('refreshOrdersBtn').addEventListener('click', loadOrders);
+
+            // Фильтры заказов
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Убираем активный класс у всех кнопок
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    // Добавляем активный класс нажатой кнопке
+                    btn.classList.add('active');
+                    // Применяем фильтр
+                    renderOrders(btn.dataset.status);
+                });
+            });
+
+            // Закрытие модального окна
+            document.getElementById('closeModal').addEventListener('click', () => {
+                document.getElementById('orderModal').style.display = 'none';
+            });
+
+            // Закрытие модального окна по клику вне его
+            document.getElementById('orderModal').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('orderModal')) {
+                    document.getElementById('orderModal').style.display = 'none';
+                }
+            });
+
+            // Автовход при наличии токена
+            if (authToken()) {
+                tryLogin().then(result => {
+                    if (result.ok) {
+                        document.getElementById('loginCard').style.display = 'none';
+                        document.getElementById('dashboardCard').style.display = 'block';
+                        document.getElementById('currentUser').textContent = `Автоматический вход`;
+                        loadAdmins();
+                        loadOrders();
+                    }
+                });
+            }
+
+            // Enter для входа
+            document.getElementById('adminPass').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    document.getElementById('loginBtn').click();
+                }
+            });
+
+            // Enter для создания администратора
+            document.getElementById('newAdminLogin').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    document.getElementById('createAdminBtn').click();
+                }
+            });
+        });
+    </script>
 </body>
 </html>

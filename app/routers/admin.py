@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPBasicCredentials, HTTPBasic
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 from starlette import status
 
 from app.config import TEST_LOGIN, TEST_PASSWORD
@@ -244,4 +245,55 @@ async def reject_order(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error accepting order: {str(e)}"
+        )
+
+
+@router.get("/admin_orders")
+async def get_admin_orders(
+        db: AsyncSession = Depends(get_db),
+        auth: Admin = Depends(verify_admin)
+):
+    try:
+
+        stmt = select(Order).options(
+            selectinload(Order.order_items)
+        ).order_by(Order.created_at.desc())
+
+        result = await db.execute(stmt)
+        orders = result.scalars().all()
+
+        order_list = []
+
+        for order in orders:
+            # Получаем товары заказа
+            items = []
+            for order_item in order.order_items:
+                items.append({
+                    "product_id": order_item.product_id,
+                    "quantity": order_item.quantity,
+                    "price": order_item.price,
+                    "name": order_item.product_name if hasattr(order_item,
+                                                               'product_name') else f"Товар {order_item.product_id}"
+                })
+
+            order_list.append({
+                "id": order.id,
+                "total_amount": order.total_amount,
+                "total_items": order.total_items,
+                "status": order.status,
+                "address": order.address,
+                "telephone": order.telephone,
+                "email": order.email,
+                "created_at": order.created_at,
+                "updated_at": order.updated_at,
+                "items": items  # Добавляем список товаров
+            })
+
+        return {"orders": order_list}
+
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error getting orders: {str(e)}"
         )
