@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Admin — TechStore</title>
+    <style>
+        :root{--bg:#f6f6f7;--card:#fff;--muted:#666;--accent:#000}
+        /* Layout */
+        body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; background:var(--bg); margin:0;padding:24px;color:#111}
+        .container{max-width:980px;margin:24px auto}
+        .card{background:var(--card);padding:18px;border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,0.06);margin-bottom:18px}
+
+        /* Typography */
+        h1{font-size:20px;margin:0 0 12px}
+        label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+        .small{font-size:12px;color:var(--muted)}
+        .muted{color:var(--muted);font-size:13px}
+
+        /* Inputs */
+        input[type=text],input[type=password]{width:100%;padding:10px 12px;height:44px;border:1px solid #e9e9e9;border-radius:8px;margin-bottom:12px;font-size:14px}
+
+        /* Buttons: unified and consistent */
+        .btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;border-radius:8px;font-weight:600;cursor:pointer;font-size:14px;border:0;min-height:44px}
+        button, .btn{font-family:inherit}
+        .btn.primary{background:var(--accent);color:#fff;border:0}
+        .btn.secondary{background:#fff;color:var(--accent);border:1px solid #e5e5e5}
+
+        /* Rows and actions */
+        .row{display:flex;gap:12px}
+        .row .btn{flex:1;min-width:0}
+        .actions{display:flex;gap:8px;align-items:center}
+        .actions .btn{flex:0 0 auto;min-width:90px}
+        /* helper to align a control to the right inside a flex row */
+        .align-right{margin-left:auto}
+
+        /* Grid split */
+        .split{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+
+        /* Tables and lists */
+        table{width:100%;border-collapse:collapse;font-size:13px}
+        th,td{padding:8px;border-bottom:1px solid #f1f1f1;text-align:left}
+
+        .notice{padding:8px 12px;border-radius:6px;background:#fff8d6;border:1px solid #ffe8a2;color:#6b4b00}
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card" id="loginCard">
+        <h1>Админ панель — вход</h1>
+        <div class="muted">Войдите под учётной записью администратора (HTTP Basic)</div>
+        <div style="margin-top:12px">
+            <label for="adminUser">Логин</label>
+            <input id="adminUser" type="text" placeholder="admin" value="admin" />
+            <label for="adminPass">Пароль</label>
+            <input id="adminPass" type="password" placeholder="password" />
+            <div class="row">
+                <button id="loginBtn" class="btn primary">Войти</button>
+                <button id="clearBtn" class="btn secondary">Очистить</button>
+            </div>
+            <div style="height:8px"></div>
+            <div id="loginMsg" class="small muted"></div>
+        </div>
+    </div>
+
+    <div class="card" id="dashboardCard" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+            <h1>Панель администратора</h1>
+            <div class="actions">
+                <button id="logoutBtn" class="btn secondary">Выйти</button>
+            </div>
+        </div>
+
+        <div class="split" style="margin-top:12px">
+            <div>
+                <h3 style="margin:0 0 8px">Администраторы</h3>
+                <div id="adminsArea" class="card" style="padding:10px"></div>
+                <div style="margin-top:8px">
+                    <label for="newAdminLogin">Создать нового администратора (логин)</label>
+                    <input id="newAdminLogin" type="text" placeholder="username" />
+                    <div style="margin-top:8px" class="row">
+                        <button id="createAdminBtn" class="btn primary">Создать</button>
+                        <button id="refreshAdminsBtn" class="btn secondary">Обновить список</button>
+                    </div>
+                    <div id="createMsg" class="small muted" style="margin-top:8px"></div>
+                </div>
+            </div>
+
+            <div>
+                <h3 style="margin:0 0 8px">Заказы</h3>
+                <div id="ordersArea" class="card" style="padding:10px;max-height:460px;overflow:auto"></div>
+                <div style="margin-top:8px" class="small muted">Нажмите "Обновить" чтобы получить последние заказы</div>
+                <div style="margin-top:8px" class="row">
+                    <button id="refreshOrdersBtn" class="btn primary align-right">Обновить</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="debug" style="margin-top:12px"></div>
+</div>
+
+<script>
+const API = location.origin.includes('file:') ? 'http://localhost:8000' : location.origin.replace(/:\d+$/, ':8000');
+// simple auth storage
+function authToken() { return localStorage.getItem('adminAuth') || '' }
+function setAuthToken(v){ if(v) localStorage.setItem('adminAuth', v); else localStorage.removeItem('adminAuth') }
+
+function authFetch(path, opts={}){
+    opts.headers = opts.headers || {};
+    const token = authToken();
+    if(token) opts.headers['Authorization'] = 'Basic ' + token;
+    opts.credentials = opts.credentials || 'include';
+    return fetch(API + path, opts);
+}
+
+async function tryLogin(username, password){
+    // Если переданы username/password — используем их и сохраняем token.
+    // Если не переданы (undefined) — просто валидируем уже сохранённый token в localStorage и не перезаписываем его.
+    if (typeof username !== 'undefined' && typeof password !== 'undefined' && username !== '') {
+        const token = btoa(`${username}:${password}`);
+        setAuthToken(token);
+    }
+
+    try{
+        const res = await authFetch('/admin/dashboard');
+        if(res.status === 401){
+            // Некорректные данные — удалить токен и вернуть ошибку
+            setAuthToken('');
+            throw new Error('Unauthorized');
+        }
+        const data = await res.json();
+        return {ok:true,data};
+    }catch(e){
+        // На всякий случай очищаем токен при ошибке проверки
+        setAuthToken('');
+        return {ok:false,error:e.message};
+    }
+}
+
+// UI helpers
+function showLoginMsg(text){ document.getElementById('loginMsg').textContent = text }
+function showCreateMsg(text){ document.getElementById('createMsg').textContent = text }
+
+// Load lists
+async function loadAdmins(){
+    try{
+        const res = await authFetch('/get_admins');
+        if(res.status===401) { throw new Error('Unauthorized') }
+        const js = await res.json();
+        const area = document.getElementById('adminsArea');
+        const list = (js.result || []).map(a => `<div class="small">ID: ${a.id} — status: ${a.status}</div>`).join('');
+        area.innerHTML = list || '<div class="small muted">Нет администраторов</div>';
+    }catch(e){
+        document.getElementById('adminsArea').innerHTML = `<div class="small muted">Ошибка: ${e.message}</div>`;
+    }
+}
+
+async function loadOrders(){
+    try{
+        const res = await authFetch('/admin_orders');
+        if(res.status===401) throw new Error('Unauthorized');
+        const js = await res.json();
+        const area = document.getElementById('ordersArea');
+        const rows = (js.orders || []).map(o => `
+            <div style="padding:8px;border-bottom:1px solid #f2f2f2">
+                <div class="small">ID: ${o.id} — ${o.created_at}</div>
+                <div><strong>${o.total_items} items</strong> — ${o.total_amount} ₽</div>
+                <div class="small">status: ${o.status}</div>
+            </div>
+        `).join('');
+        area.innerHTML = rows || '<div class="small muted">Нет заказов</div>';
+    }catch(e){
+        document.getElementById('ordersArea').innerHTML = `<div class="small muted">Ошибка: ${e.message}</div>`;
+    }
+}
+
+async function createAdmin(username){
+    try{
+        const res = await authFetch(`/create_admin?username=${encodeURIComponent(username)}`, {method:'POST'});
+        if(res.status===401) throw new Error('Unauthorized');
+        const js = await res.json();
+        return {ok:true, data: js};
+    }catch(e){ return {ok:false, error:e.message} }
+}
+
+// Login flow
+document.getElementById('loginBtn').addEventListener('click', async ()=>{
+    const user = document.getElementById('adminUser').value.trim();
+    const pass = document.getElementById('adminPass').value;
+    showLoginMsg('Авторизация...');
+    const r = await tryLogin(user,pass);
+    if(r.ok){
+        showLoginMsg('Успешно');
+        document.getElementById('loginCard').style.display='none';
+        document.getElementById('dashboardCard').style.display='block';
+        await loadAdmins();
+        await loadOrders();
+    }else{
+        showLoginMsg('Ошибка: ' + (r.error||'auth failed'));
+    }
+});
+
+document.getElementById('clearBtn').addEventListener('click', ()=>{
+    document.getElementById('adminUser').value='';
+    document.getElementById('adminPass').value='';
+    showLoginMsg('');
+});
+
+// logout
+document.getElementById('logoutBtn').addEventListener('click', ()=>{
+    setAuthToken('');
+    document.getElementById('dashboardCard').style.display='none';
+    document.getElementById('loginCard').style.display='block';
+    showLoginMsg('Вы вышли');
+});
+
+// create admin
+document.getElementById('createAdminBtn').addEventListener('click', async ()=>{
+    const name = document.getElementById('newAdminLogin').value.trim();
+    if(!name){ showCreateMsg('Введите имя'); return }
+    showCreateMsg('Создание...');
+    const res = await createAdmin(name);
+    if(res.ok){ showCreateMsg('Создан admin id='+ (res.data && res.data.admin_id)); loadAdmins(); }
+    else showCreateMsg('Ошибка: '+ (res.error || 'create failed'));
+});
+
+document.getElementById('refreshAdminsBtn').addEventListener('click', loadAdmins);
+document.getElementById('refreshOrdersBtn').addEventListener('click', loadOrders);
+
+// try restore session
+(function(){
+    if(authToken()){
+        // validate silently using existing token (do not pass credentials)
+        tryLogin().then(r=>{
+            if(r.ok){
+                document.getElementById('loginCard').style.display='none';
+                document.getElementById('dashboardCard').style.display='block';
+                loadAdmins();
+                loadOrders();
+            } else {
+                // invalid token — ensure cleared
+                setAuthToken('');
+            }
+        }).catch(()=>{ setAuthToken(''); });
+    }
+})();
+
+</script>
+</body>
+</html>
