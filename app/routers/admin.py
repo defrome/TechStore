@@ -232,7 +232,7 @@ async def reject_order(
         await db.refresh(order)
 
         return {
-            "message": f"Order {order_id} accepted successfully",
+            "message": f"Order {order_id} rejected successfully",
             "order_id": order.id,
             "new_status": order.status
         }
