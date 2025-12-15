@@ -175,7 +175,8 @@ async def get_admin_routers(db: AsyncSession = Depends(get_db),
 @router.post("/accept_order")
 async def accept_order(
     order_id: int,  # FastAPI автоматически конвертирует
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    auth: str = Depends(verify_admin)
 ):
     try:
         result = await db.execute(
@@ -211,7 +212,8 @@ async def accept_order(
 @router.post("/reject_order")
 async def reject_order(
     order_id: int,  # FastAPI автоматически конвертирует
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    auth: str = Depends(verify_admin)
 ):
     try:
         result = await db.execute(
