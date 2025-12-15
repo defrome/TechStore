@@ -21,6 +21,7 @@ async def lifespan(app: FastAPI):
         await conn.run_sync(Base.metadata.drop_all)
 
 
+
 app = FastAPI(lifespan=lifespan)
 
 admin = Admin(

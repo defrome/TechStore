@@ -171,3 +171,47 @@ async def get_admin_routers(db: AsyncSession = Depends(get_db),
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error get orders: {str(e)}"
         )
+
+@router.post("/accept_order")
+async def accept_order(
+    order_id: int,  # FastAPI автоматически конвертирует
+    db: AsyncSession = Depends(get_db)
+):
+    try:
+        result = await db.execute(
+            select(Order).where(Order.id == order_id)
+        )
+        order = result.scalar_one_or_none()
+
+        if not order:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Order with id {order_id} not found"
+            )
+
+        order.status = "accepted"
+        await db.commit()
+        await db.refresh(order)
+
+        return {
+            "message": f"Order {order_id} accepted successfully",
+            "order_id": order.id,
+            "new_status": order.status
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error accepting order: {str(e)}"
+        )
+
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error getting order: {str(e)}"
+        )
+
