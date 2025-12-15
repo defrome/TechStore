@@ -1578,76 +1578,104 @@ function renderCart(data) {
         }
 
         // Submit order
-        async function submitOrder() {
-            const address = document.getElementById('orderAddress').value.trim();
-            const telephone = document.getElementById('orderTelephone').value.trim();
-            const email = document.getElementById('orderEmail').value.trim();
+        // Submit order
+async function submitOrder() {
+    const address = document.getElementById('orderAddress').value.trim();
+    const telephone = document.getElementById('orderTelephone').value.trim();
+    const email = document.getElementById('orderEmail').value.trim();
 
-            if (!address) { 
-                showStatus('Address is required', 'error'); 
-                document.getElementById('orderAddress').focus();
-                return; 
-            }
-            
-            if (!telephone) { 
-                showStatus('Telephone is required', 'error'); 
-                document.getElementById('orderTelephone').focus();
-                return; 
-            }
-            
-            // Проверка российского формата телефона
-            const phoneRegex = /^\+7\d{10}$/;
-            if (!phoneRegex.test(telephone)) { 
-                showStatus('Phone must be in format +7XXXXXXXXXX', 'error'); 
-                document.getElementById('orderTelephone').focus();
-                return; 
-            }
-            
-            if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { 
-                showStatus('Valid email is required', 'error'); 
-                document.getElementById('orderEmail').focus();
-                return; 
-            }
+    if (!address) {
+        showStatus('Address is required', 'error');
+        document.getElementById('orderAddress').focus();
+        return;
+    }
 
-            if (!cartData || !cartData.session_id) { 
-                showStatus('No active cart session', 'error'); 
-                closeCheckoutForm(); 
-                return; 
-            }
+    if (!telephone) {
+        showStatus('Telephone is required', 'error');
+        document.getElementById('orderTelephone').focus();
+        return;
+    }
 
-            try {
-                showStatus('Creating order...');
-                const url = `${API_BASE_URL}/create_order?session_id=${encodeURIComponent(cartData.session_id)}&address=${encodeURIComponent(address)}&telephone=${encodeURIComponent(telephone)}&email=${encodeURIComponent(email)}`;
-                const resp = await fetch(url, { 
-                    method: 'POST', 
-                    credentials: 'include' 
-                });
-                
-                const body = await resp.json().catch(()=>({}));
-                
-                if (!resp.ok) {
-                    let msg = 'Error creating order';
-                    if (body && body.detail) {
-                        if (typeof body.detail === 'object' && body.detail.unavailable_items) {
-                            msg = 'Unavailable: ' + body.detail.unavailable_items.join('; ');
-                        } else { 
-                            msg = String(body.detail); 
-                        }
-                    }
-                    showStatus(msg, 'error');
-                    return;
+    // ========== ИСПРАВЛЕННАЯ ВАЛИДАЦИЯ ТЕЛЕФОНА ==========
+    // Нормализуем номер: убираем все нецифровые символы кроме +
+    const cleanedPhone = telephone.replace(/[^\d+]/g, '');
+
+    // Проверяем различные форматы российских номеров
+    let normalizedPhone = '';
+
+    if (cleanedPhone.startsWith('+7') && cleanedPhone.length === 12) {
+        // Формат: +7 999 123-45-67 (уже правильный)
+        normalizedPhone = cleanedPhone;
+    } else if (cleanedPhone.startsWith('8') && cleanedPhone.length === 11) {
+        // Формат: 8 999 123-45-67 → конвертируем в +7
+        normalizedPhone = '+7' + cleanedPhone.substring(1);
+    } else if (cleanedPhone.startsWith('7') && cleanedPhone.length === 11 && !cleanedPhone.startsWith('+7')) {
+        // Формат: 7 999 123-45-67 (без +) → добавляем +
+        normalizedPhone = '+7' + cleanedPhone.substring(1);
+    } else {
+        showStatus('Введите российский номер телефона: +7XXX, 8XXX или 7XXX', 'error');
+        document.getElementById('orderTelephone').focus();
+        return;
+    }
+
+    // Дополнительная проверка формата
+    if (!/^\+7\d{10}$/.test(normalizedPhone)) {
+        showStatus('Номер должен содержать 11 цифр после +7', 'error');
+        document.getElementById('orderTelephone').focus();
+        return;
+    }
+
+    // ========== КОНЕЦ ВАЛИДАЦИИ ==========
+
+    if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+        showStatus('Valid email is required', 'error');
+        document.getElementById('orderEmail').focus();
+        return;
+    }
+
+    // Сохраняем нормализованный номер для отправки
+    const finalTelephone = normalizedPhone;
+
+    // ... остальной код отправки заказа
+    if (!cartData || !cartData.session_id) {
+        showStatus('No active cart session', 'error');
+        closeCheckoutForm();
+        return;
+    }
+
+    try {
+        showStatus('Creating order...');
+        const url = `${API_BASE_URL}/create_order?session_id=${encodeURIComponent(cartData.session_id)}&address=${encodeURIComponent(address)}&telephone=${encodeURIComponent(finalTelephone)}&email=${encodeURIComponent(email)}`;
+        const resp = await fetch(url, {
+            method: 'POST',
+            credentials: 'include'
+        });
+
+        const body = await resp.json().catch(()=>({}));
+
+        if (!resp.ok) {
+            let msg = 'Error creating order';
+            if (body && body.detail) {
+                if (typeof body.detail === 'object' && body.detail.unavailable_items) {
+                    msg = 'Unavailable: ' + body.detail.unavailable_items.join('; ');
+                } else {
+                    msg = String(body.detail);
                 }
-
-                showStatus(`Order created successfully! ID: ${body.order_id || 'N/A'}`, 'success');
-                closeCheckoutForm();
-                await loadCart();
-                closeCart();
-
-            } catch (err) {
-                console.error('Error creating order:', err);
-                showStatus('Error creating order', 'error');
             }
+            showStatus(msg, 'error');
+            return;
         }
+
+        showStatus(`Order created successfully! ID: ${body.order_id || 'N/A'}`, 'success');
+        closeCheckoutForm();
+        await loadCart();
+        closeCart();
+
+    } catch (err) {
+        console.error('Error creating order:', err);
+        showStatus('Error creating order', 'error');
+    }
+}
 
         // Удалить из корзины
         async function removeFromCart(itemId, quantity = 1) {
