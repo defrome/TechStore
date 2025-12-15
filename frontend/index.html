@@ -1061,7 +1061,7 @@
             const cartTotal = document.getElementById('cartTotal');
             const cartCount = document.getElementById('cartCount');
 
-            if (data.cart_items && data.cart_items.length > 0) {
+            if (data && data.cart_items && data.cart_items.length > 0) {
                 // Показать общую сумму
                 cartTotal.style.display = 'flex';
                 document.getElementById('totalPrice').textContent = `${(data.total_cart_price || 0).toLocaleString()} RUB`;
@@ -1075,6 +1075,11 @@
                     const productInfo = allProducts.find(p => p.id === item.item_id);
                     const productName = productInfo ? productInfo.name : `Item #${item.item_id}`;
                     const hasImage = productInfo && productInfo.image && productInfo.image.trim() !== '';
+
+                    // Determine stock and whether we can increase quantity
+                    const stock = productInfo ? (Number(productInfo.quantity) || 0) : 0;
+                    const currentQty = item.quantity || 1;
+                    const canIncrease = stock === 0 ? false : (currentQty < stock);
 
                     return `
                         <div class="cart-item">
@@ -1090,8 +1095,8 @@
                                 <div class="cart-item-price">${(item.item_price || 0).toLocaleString()} RUB</div>
                                 <div class="cart-item-controls">
                                     <button class="quantity-btn" onclick="removeFromCart(${item.item_id})">−</button>
-                                    <span class="cart-item-quantity">${item.quantity || 1}</span>
-                                    <button class="quantity-btn" onclick="addToCart(${item.item_id})">+</button>
+                                    <span class="cart-item-quantity">${currentQty}</span>
+                                    <button class="quantity-btn" ${!canIncrease ? 'disabled' : ''} onclick="addToCart(${item.item_id})">+</button>
                                 </div>
                             </div>
                         </div>
@@ -1108,6 +1113,19 @@
         // Добавить в корзину
         async function addToCart(itemId, quantity = 1) {
             try {
+                // Клиентская проверка наличия на складе перед запросом
+                const product = allProducts.find(p => p.id === itemId);
+                if (product && typeof product.quantity !== 'undefined') {
+                    const stock = Number(product.quantity) || 0;
+                    const cartItem = (cartData && cartData.cart_items) ? cartData.cart_items.find(ci => ci.item_id === itemId) : null;
+                    const currentQty = cartItem ? (cartItem.quantity || 0) : 0;
+
+                    if (currentQty + quantity > stock) {
+                        showStatus('Not enough stock', 'error');
+                        return;
+                    }
+                }
+
                 showStatus('Adding to cart...');
 
                 const response = await fetch(`${API_BASE_URL}/cart/add?item_id=${itemId}&quantity=${quantity}`, {
@@ -1121,7 +1139,7 @@
                 showStatus('Added to cart');
 
                 // Обновить корзину
-                loadCart();
+                await loadCart();
                 openCart();
 
             } catch (error) {

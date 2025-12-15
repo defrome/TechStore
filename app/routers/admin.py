@@ -1,13 +1,49 @@
 import random
 import string
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import HTTPBasicCredentials, HTTPBasic
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 from app.database.db import get_db
 from app.models.models import Admin, Order
+import secrets
 
 router = APIRouter()
+
+security = HTTPBasic()
+
+async def verify_admin(
+        credentials: HTTPBasicCredentials = Depends(security),
+        db: AsyncSession = Depends(get_db)
+) -> Admin:
+
+    stmt = select(Admin).where(
+        Admin.login == credentials.username
+    ).where(Admin.status == True)
+
+    result = await db.execute(stmt)
+    admin = result.scalar_one_or_none()
+
+    if not admin:
+        logger.warning(f"Admin not found or inactive: {credentials.username}")
+        secrets.compare_digest(credentials.password, "dummy_password")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect login or password",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+
+    is_password_correct = secrets.compare_digest(credentials.password, admin.password)
+
+    if not is_password_correct:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect login or password",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+
+    return admin
 
 def generate_password(length=12, use_digits=True, use_special=True):
 
@@ -42,13 +78,18 @@ def generate_password(length=12, use_digits=True, use_special=True):
 
     return ''.join(password_chars)
 
+@router.get("/admin/dashboard")
+async def admin_dashboard(username: str = Depends(verify_admin)):
+    return {"message": f"Welcome admin {username}"}
 
 @router.post("/create_admin")
 async def create_admin(
-        db: AsyncSession = Depends(get_db)
+        db: AsyncSession = Depends(get_db),
+        username: str = "admin"
 ):
     try:
         new_admin = Admin(
+            username=username,
             password=generate_password(16),
             login=generate_password(10),
         )
@@ -59,7 +100,7 @@ async def create_admin(
 
         return {
             "result": "Admin succesful created",
-            "admin_id": new_admin.id
+            "admin_id": new_admin.id,
         }
 
     except Exception as e:
@@ -94,7 +135,8 @@ async def get_admins(
         )
 
 @router.get("/admin_orders")
-async def get_admin_routers(db: AsyncSession = Depends(get_db)):
+async def get_admin_routers(db: AsyncSession = Depends(get_db),
+                            auth: str = Depends(verify_admin)):
     try:
         result = await db.execute(select(Order))
         orders = result.scalars().all()

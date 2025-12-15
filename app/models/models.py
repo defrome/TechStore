@@ -16,9 +16,10 @@ class Admin(Base):
     __tablename__ = "admins"
 
     id = Column(Integer, primary_key=True, index=True)
+    username = Column(String(30))
     password = Column(String(30))
     login = Column(String(30))
-    status = Column(Boolean, default=False)
+    status = Column(Boolean, default=True)
 
     def __repr__(self):
         return f"Admin(admin_id={self.id}, status={self.status})"
