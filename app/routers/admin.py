@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 from app.database.db import get_db
-from app.models.models import Admin
+from app.models.models import Admin, Order
 
 router = APIRouter()
 
@@ -91,4 +91,30 @@ async def get_admins(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error getting admins: {str(e)}"
+        )
+
+@router.get("/admin_orders")
+async def get_admin_routers(db: AsyncSession = Depends(get_db)):
+    try:
+        result = await db.execute(select(Order))
+        orders = result.scalars().all()
+
+        order_list = []
+
+        for order in orders:
+            order_list.append({
+                "id": order.id,
+                "total_amount": order.total_amount,
+                "total_items": order.total_items,
+                "status": order.status,
+                "created_at": order.created_at
+            })
+
+        return {"orders": order_list}
+
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error get orders: {str(e)}"
         )
