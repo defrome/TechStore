@@ -16,9 +16,6 @@ async def lifespan(app: FastAPI):
         await conn.run_sync(Base.metadata.create_all)
     yield
 
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-
 app = FastAPI(lifespan=lifespan)
 
 admin = Admin(
@@ -31,7 +28,7 @@ admin = Admin(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
