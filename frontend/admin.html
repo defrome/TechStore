@@ -45,7 +45,7 @@
             border: 1px solid var(--border);
         }
         
-        h1, h2, h3 {
+        h1, h2, h3, h4 {
             margin-top: 0;
             color: var(--accent);
         }
@@ -64,6 +64,11 @@
         h3 {
             font-size: 18px;
             margin-bottom: 12px;
+        }
+        
+        h4 {
+            font-size: 16px;
+            margin-bottom: 10px;
         }
         
         .header {
@@ -106,16 +111,11 @@
             transition: all 0.2s ease;
             text-decoration: none;
             gap: 8px;
-            height: 40px;
         }
         
         .btn:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        
-        .btn:active {
-            transform: translateY(0);
         }
         
         .btn-primary {
@@ -133,11 +133,6 @@
             color: white;
         }
         
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-        
         .btn-outline {
             background: transparent;
             border: 1px solid var(--border);
@@ -150,223 +145,62 @@
             height: 32px;
         }
         
-        /* Формы */
-        .form-group {
-            margin-bottom: 16px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 500;
-            color: var(--accent);
-            font-size: 14px;
-        }
-        
-        input[type="text"],
-        input[type="password"],
-        input[type="email"],
-        input[type="number"],
-        select,
-        textarea {
-            width: 100%;
-            padding: 10px 14px;
+        /* Списки товаров */
+        .items-list {
+            margin: 12px 0;
             border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.2s;
+            border-radius: 6px;
+            overflow: hidden;
         }
         
-        input:focus,
-        select:focus,
-        textarea:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
-        }
-        
-        /* Сетка */
-        .grid-2 {
+        .item-header {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-        }
-        
-        .grid-3 {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
-        }
-        
-        /* Списки и таблицы */
-        .orders-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        
-        .order-card {
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 16px;
-            background: white;
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-        
-        .order-card:hover {
-            border-color: var(--accent);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-        
-        .order-card.expanded {
-            border-color: var(--accent);
-            background: #f8fafc;
-        }
-        
-        .order-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        
-        .order-id {
-            font-weight: 700;
-            color: var(--accent);
-            font-size: 16px;
-        }
-        
-        .order-date {
-            color: var(--muted);
-            font-size: 13px;
-        }
-        
-        .order-summary {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        
-        .order-amount {
-            font-size: 18px;
-            font-weight: 700;
-            color: #2c3e50;
-        }
-        
-        .order-items {
-            color: var(--muted);
-            font-size: 14px;
-        }
-        
-        .order-details {
-            display: none;
-            padding-top: 16px;
-            border-top: 1px solid var(--border);
-            margin-top: 16px;
-        }
-        
-        .order-details.expanded {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .detail-row {
-            display: flex;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-        
-        .detail-label {
-            font-weight: 600;
-            min-width: 140px;
-            color: var(--accent);
-        }
-        
-        .detail-value {
-            flex: 1;
-        }
-        
-        .order-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 16px;
-        }
-        
-        /* Админы */
-        .admin-card {
+            grid-template-columns: 3fr 1fr 1fr 1fr;
+            padding: 10px 12px;
             background: #f8f9fa;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .admin-info {
-            font-size: 14px;
-        }
-        
-        .admin-id {
+            border-bottom: 1px solid var(--border);
             font-weight: 600;
+            font-size: 13px;
             color: var(--accent);
         }
         
-        .admin-status {
-            font-size: 12px;
-            padding: 2px 8px;
-            border-radius: 12px;
-            background: #e9ecef;
-        }
-        
-        /* Уведомления */
-        .alert {
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 16px;
+        .item-row {
+            display: grid;
+            grid-template-columns: 3fr 1fr 1fr 1fr;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
             font-size: 14px;
-            display: none;
         }
         
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+        .item-row:last-child {
+            border-bottom: none;
         }
         
-        .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+        .item-row:hover {
+            background: var(--hover);
         }
         
-        .alert-info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
+        .item-name {
+            font-weight: 500;
         }
         
-        /* Утилиты */
-        .mt-2 { margin-top: 16px; }
-        .mt-3 { margin-top: 24px; }
-        .mb-2 { margin-bottom: 16px; }
-        .mb-3 { margin-bottom: 24px; }
-        .d-none { display: none; }
-        .d-flex { display: flex; }
-        .align-center { align-items: center; }
-        .justify-between { justify-content: space-between; }
-        .gap-2 { gap: 16px; }
-        .w-100 { width: 100%; }
-        .text-muted { color: var(--muted); }
-        .text-center { text-align: center; }
-        .small { font-size: 13px; }
+        .item-price, .item-quantity, .item-total {
+            text-align: right;
+        }
+        
+        .items-total {
+            padding: 12px;
+            background: #f8fafc;
+            border-top: 1px solid var(--border);
+            font-weight: 600;
+            text-align: right;
+        }
+        
+        .items-preview {
+            margin: 8px 0;
+            font-size: 13px;
+            color: var(--muted);
+        }
         
         /* Модальное окно */
         .modal {
@@ -385,8 +219,8 @@
         .modal-content {
             background: white;
             border-radius: 12px;
-            padding: 32px;
-            max-width: 500px;
+            padding: 24px;
+            max-width: 800px;
             width: 90%;
             max-height: 80vh;
             overflow-y: auto;
@@ -394,6 +228,8 @@
         
         .modal-header {
             margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
         }
         
         .modal-close {
@@ -407,48 +243,34 @@
             color: var(--muted);
         }
         
-        /* Фильтры */
-        .filters {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .filter-btn {
-            padding: 6px 16px;
-            border: 1px solid var(--border);
-            background: white;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 13px;
-            transition: all 0.2s;
-        }
-        
-        .filter-btn.active {
-            background: var(--accent);
-            color: white;
-            border-color: var(--accent);
-        }
-        
-        .filter-btn:hover:not(.active) {
-            background: var(--hover);
-        }
+        /* Утилиты */
+        .mt-2 { margin-top: 16px; }
+        .mt-3 { margin-top: 24px; }
+        .mb-2 { margin-bottom: 16px; }
+        .mb-3 { margin-bottom: 24px; }
+        .d-none { display: none; }
+        .d-flex { display: flex; }
+        .align-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 16px; }
+        .w-100 { width: 100%; }
+        .text-muted { color: var(--muted); }
+        .text-center { text-align: center; }
+        .small { font-size: 13px; }
         
         /* Адаптивность */
-        @media (max-width: 1200px) {
-            .grid-3 { grid-template-columns: 1fr 1fr; }
+        @media (max-width: 768px) {
+            .item-header,
+            .item-row { grid-template-columns: 2fr 1fr 1fr 1fr; }
         }
         
-        @media (max-width: 768px) {
-            .grid-2,
-            .grid-3 { grid-template-columns: 1fr; }
-            .header { flex-direction: column; align-items: flex-start; gap: 16px; }
-            .order-header { flex-direction: column; align-items: flex-start; gap: 8px; }
-            .order-summary { flex-direction: column; align-items: flex-start; gap: 8px; }
-            .filters { flex-wrap: wrap; }
-            .detail-row { flex-direction: column; gap: 4px; }
-            .detail-label { min-width: auto; }
+        @media (max-width: 480px) {
+            .item-header,
+            .item-row { grid-template-columns: 1fr 1fr; }
+            .item-header div:nth-child(3),
+            .item-header div:nth-child(4),
+            .item-row div:nth-child(3),
+            .item-row div:nth-child(4) { display: none; }
         }
     </style>
 </head>
@@ -475,15 +297,10 @@
                 <button id="loginBtn" class="btn btn-primary w-100">Войти</button>
                 <button id="clearBtn" class="btn btn-outline">Очистить</button>
             </div>
-            
-            <div class="text-center mt-3 text-muted small">
-                Используйте данные тестового аккаунта или создайте нового администратора
-            </div>
         </div>
 
         <!-- Основная панель -->
         <div class="card d-none" id="dashboardCard">
-            <!-- Шапка -->
             <div class="header">
                 <div>
                     <h1>👨‍💼 Панель управления TechStore</h1>
@@ -495,41 +312,13 @@
                 </div>
             </div>
 
-            <!-- Статистика -->
-            <div class="grid-3 mb-3">
-                <div class="card">
-                    <h3>📊 Всего заказов</h3>
-                    <div class="order-amount" id="totalOrders">0</div>
-                </div>
-                <div class="card">
-                    <h3>⏳ Ожидают</h3>
-                    <div class="order-amount" id="pendingOrders">0</div>
-                </div>
-                <div class="card">
-                    <h3>✅ Принятые</h3>
-                    <div class="order-amount" id="acceptedOrders">0</div>
-                </div>
-            </div>
-
             <!-- Основной контент -->
             <div class="grid-2">
                 <!-- Левая колонка: Заказы -->
                 <div>
                     <div class="d-flex justify-between align-center mb-2">
                         <h2>🛒 Заказы</h2>
-                        <div class="d-flex gap-2">
-                            <button id="refreshOrdersBtn" class="btn btn-primary">
-                                <span>🔄 Обновить</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Фильтры по статусу -->
-                    <div class="filters mb-3">
-                        <button class="filter-btn active" data-status="all">Все</button>
-                        <button class="filter-btn" data-status="pending">Ожидают</button>
-                        <button class="filter-btn" data-status="accepted">Принятые</button>
-                        <button class="filter-btn" data-status="rejected">Отклоненные</button>
+                        <button id="refreshOrdersBtn" class="btn btn-primary">🔄 Обновить</button>
                     </div>
                     
                     <div id="ordersArea" class="orders-list"></div>
@@ -561,10 +350,6 @@
                             <button id="createAdminBtn" class="btn btn-primary">Создать</button>
                             <button id="generateUsernameBtn" class="btn btn-outline">Сгенерировать</button>
                         </div>
-                        
-                        <div class="mt-2 text-muted small">
-                            Пароль будет сгенерирован автоматически и показан один раз
-                        </div>
                     </div>
                 </div>
             </div>
@@ -581,16 +366,13 @@
                 
                 <div id="modalOrderDetails"></div>
                 
-                <div class="order-actions mt-3" id="modalOrderActions">
-                    <!-- Кнопки действий будут добавлены динамически -->
-                </div>
+                <div class="order-actions mt-3" id="modalOrderActions"></div>
             </div>
         </div>
     </div>
 
     <script>
         const API = location.origin.includes('file:') ? 'http://localhost:8000' : location.origin.replace(/:\d+$/, ':8000');
-        let currentUser = '';
         let allOrders = [];
 
         // Управление авторизацией
@@ -612,11 +394,7 @@
             if(token) {
                 opts.headers['Authorization'] = 'Basic ' + token;
             }
-            opts.credentials = opts.credentials || 'include';
-            return fetch(API + path, opts).catch(err => {
-                console.error('Network error:', err);
-                throw err;
-            });
+            return fetch(API + path, opts);
         }
 
         // Попытка входа
@@ -624,7 +402,6 @@
             if (username && password) {
                 const token = btoa(`${username}:${password}`);
                 setAuthToken(token);
-                currentUser = username;
             }
 
             try {
@@ -648,20 +425,16 @@
             alert.className = `alert alert-${type}`;
             alert.style.display = 'block';
             
-            if (type !== 'error') {
-                setTimeout(() => {
-                    alert.style.display = 'none';
-                }, 3000);
-            }
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
         }
 
         // Загрузка администраторов
         async function loadAdmins(){
             try {
                 const res = await authFetch('/get_admins');
-                if(res.status === 401) {
-                    throw new Error('Требуется авторизация');
-                }
+                if(res.status === 401) throw new Error('Требуется авторизация');
                 const data = await res.json();
                 const admins = data.result || [];
                 
@@ -677,16 +450,13 @@
                             <div class="admin-id">ID: ${admin.id}</div>
                             <div class="small text-muted">Статус: ${admin.status ? 'Активен' : 'Неактивен'}</div>
                         </div>
-                        <span class="admin-status ${admin.status ? 'status-accepted' : 'status-rejected'}">
-                            ${admin.status ? '✓' : '✗'}
-                        </span>
                     </div>
                 `).join('');
                 
                 area.innerHTML = html;
             } catch(e) {
                 document.getElementById('adminsArea').innerHTML = 
-                    `<div class="alert alert-error">Ошибка загрузки: ${e.message}</div>`;
+                    `<div class="alert alert-error">Ошибка: ${e.message}</div>`;
             }
         }
 
@@ -697,34 +467,20 @@
             
             try {
                 const res = await authFetch('/admin_orders');
-                if(res.status === 401) {
-                    throw new Error('Требуется авторизация');
-                }
+                if(res.status === 401) throw new Error('Требуется авторизация');
                 const data = await res.json();
                 allOrders = data.orders || [];
                 renderOrders();
-                updateStats();
             } catch(e) {
                 document.getElementById('ordersArea').innerHTML = 
-                    `<div class="alert alert-error">Ошибка загрузки заказов: ${e.message}</div>`;
+                    `<div class="alert alert-error">Ошибка: ${e.message}</div>`;
             } finally {
                 loading.style.display = 'none';
             }
         }
 
-        // Обновление статистики
-        function updateStats() {
-            const total = allOrders.length;
-            const pending = allOrders.filter(o => o.status === 'pending').length;
-            const accepted = allOrders.filter(o => o.status === 'accepted').length;
-            
-            document.getElementById('totalOrders').textContent = total;
-            document.getElementById('pendingOrders').textContent = pending;
-            document.getElementById('acceptedOrders').textContent = accepted;
-        }
-
-        // Отображение заказов с фильтрацией
-        function renderOrders(filterStatus = 'all') {
+        // Отображение заказов
+        function renderOrders() {
             const area = document.getElementById('ordersArea');
             
             if (allOrders.length === 0) {
@@ -732,21 +488,27 @@
                 return;
             }
             
-            // Фильтрация заказов
-            let filteredOrders = allOrders;
-            if (filterStatus !== 'all') {
-                filteredOrders = allOrders.filter(order => order.status === filterStatus);
-            }
-            
             // Сортировка по дате (новые сверху)
-            filteredOrders.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            const sortedOrders = [...allOrders].sort((a, b) => 
+                new Date(b.created_at) - new Date(a.created_at)
+            );
             
-            const html = filteredOrders.map(order => {
+            const html = sortedOrders.map(order => {
                 const date = new Date(order.created_at).toLocaleString('ru-RU');
                 const statusClass = `status status-${order.status}`;
+                const itemsText = order.items && order.items.length > 0 
+                    ? `${order.items.length} товаров` 
+                    : 'Нет товаров';
+                
+                // Предпросмотр товаров (первые 3)
+                const previewItems = order.items 
+                    ? order.items.slice(0, 3).map(item => 
+                        `${item.name || `Товар #${item.item_id}`} × ${item.quantity}`
+                      ).join(', ')
+                    : '';
                 
                 return `
-                    <div class="order-card" data-order-id="${order.id}">
+                    <div class="order-card">
                         <div class="order-header">
                             <div class="order-id">Заказ #${order.id}</div>
                             <span class="${statusClass}">${getStatusText(order.status)}</span>
@@ -754,10 +516,16 @@
                         
                         <div class="order-summary">
                             <div class="order-amount">${order.total_amount} ₽</div>
-                            <div class="order-items">${order.total_items} товаров</div>
+                            <div class="order-items">${itemsText}</div>
                         </div>
                         
-                        <div class="text-muted small order-date">${date}</div>
+                        <div class="order-date">${date}</div>
+                        
+                        ${previewItems ? `
+                            <div class="items-preview">
+                                ${previewItems}${order.items.length > 3 ? '...' : ''}
+                            </div>
+                        ` : ''}
                         
                         <div class="order-actions">
                             <button class="btn btn-sm btn-outline view-details" data-order-id="${order.id}">
@@ -781,7 +549,6 @@
             // Добавляем обработчики событий
             document.querySelectorAll('.view-details').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
                     const orderId = btn.dataset.orderId;
                     showOrderDetails(orderId);
                 });
@@ -789,7 +556,6 @@
             
             document.querySelectorAll('.accept-order').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
                     const orderId = btn.dataset.orderId;
                     acceptOrder(orderId);
                 });
@@ -797,7 +563,6 @@
             
             document.querySelectorAll('.reject-order').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
                     const orderId = btn.dataset.orderId;
                     rejectOrder(orderId);
                 });
@@ -809,9 +574,7 @@
             const statusMap = {
                 'pending': 'Ожидает',
                 'accepted': 'Принят',
-                'rejected': 'Отклонен',
-                'processing': 'В обработке',
-                'completed': 'Завершен'
+                'rejected': 'Отклонен'
             };
             return statusMap[status] || status;
         }
@@ -826,39 +589,82 @@
             document.getElementById('modalOrderStatus').className = `status status-${order.status}`;
             
             const date = new Date(order.created_at).toLocaleString('ru-RU');
+            const updatedDate = order.updated_at 
+                ? new Date(order.updated_at).toLocaleString('ru-RU')
+                : '—';
+            
+            // Создаем таблицу товаров
+            let itemsHtml = '';
+            if (order.items && order.items.length > 0) {
+                let itemsTotal = 0;
+                
+                itemsHtml = `
+                    <h4>Товары в заказе:</h4>
+                    <div class="items-list">
+                        <div class="item-header">
+                            <div>Наименование</div>
+                            <div>Цена</div>
+                            <div>Кол-во</div>
+                            <div>Сумма</div>
+                        </div>
+                `;
+                
+                order.items.forEach(item => {
+                    const subtotal = item.price * item.quantity;
+                    itemsTotal += subtotal;
+                    
+                    itemsHtml += `
+                        <div class="item-row">
+                            <div class="item-name">${item.name || `Товар #${item.item_id}`}</div>
+                            <div class="item-price">${item.price} ₽</div>
+                            <div class="item-quantity">${item.quantity}</div>
+                            <div class="item-total">${subtotal} ₽</div>
+                        </div>
+                    `;
+                });
+                
+                itemsHtml += `
+                        <div class="items-total">
+                            Итого: ${itemsTotal} ₽
+                        </div>
+                    </div>
+                `;
+            } else {
+                itemsHtml = '<div class="text-muted">Нет товаров в заказе</div>';
+            }
             
             const detailsHtml = `
                 <div class="detail-row">
-                    <div class="detail-label">Дата создания:</div>
-                    <div class="detail-value">${date}</div>
+                    <strong>Дата создания:</strong> ${date}
+                </div>
+                ${order.updated_at ? `
+                <div class="detail-row">
+                    <strong>Дата обновления:</strong> ${updatedDate}
+                </div>
+                ` : ''}
+                <div class="detail-row">
+                    <strong>Общая сумма:</strong> ${order.total_amount} ₽
                 </div>
                 <div class="detail-row">
-                    <div class="detail-label">Сумма заказа:</div>
-                    <div class="detail-value"><strong>${order.total_amount} ₽</strong></div>
+                    <strong>Количество товаров:</strong> ${order.total_items}
                 </div>
                 <div class="detail-row">
-                    <div class="detail-label">Количество товаров:</div>
-                    <div class="detail-value">${order.total_items}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">Статус:</div>
-                    <div class="detail-value"><span class="status status-${order.status}">${getStatusText(order.status)}</span></div>
+                    <strong>Статус:</strong> <span class="status status-${order.status}">${getStatusText(order.status)}</span>
                 </div>
                 ${order.address ? `
                 <div class="detail-row">
-                    <div class="detail-label">Адрес доставки:</div>
-                    <div class="detail-value">${order.address}</div>
+                    <strong>Адрес доставки:</strong> ${order.address}
                 </div>` : ''}
                 ${order.telephone ? `
                 <div class="detail-row">
-                    <div class="detail-label">Телефон:</div>
-                    <div class="detail-value">${order.telephone}</div>
+                    <strong>Телефон:</strong> ${order.telephone}
                 </div>` : ''}
                 ${order.email ? `
                 <div class="detail-row">
-                    <div class="detail-label">Email:</div>
-                    <div class="detail-value">${order.email}</div>
+                    <strong>Email:</strong> ${order.email}
                 </div>` : ''}
+                
+                ${itemsHtml}
             `;
             
             document.getElementById('modalOrderDetails').innerHTML = detailsHtml;
@@ -907,7 +713,6 @@
                 });
                 
                 if (res.ok) {
-                    const data = await res.json();
                     showAlert('loginAlert', `Заказ #${orderId} принят успешно`, 'success');
                     
                     // Обновляем статус в локальном списке
@@ -915,9 +720,7 @@
                     if (order) order.status = 'accepted';
                     
                     // Перерисовываем заказы
-                    const activeFilter = document.querySelector('.filter-btn.active').dataset.status;
-                    renderOrders(activeFilter);
-                    updateStats();
+                    renderOrders();
                 } else {
                     const error = await res.json();
                     throw new Error(error.detail || 'Ошибка при принятии заказа');
@@ -937,7 +740,6 @@
                 });
                 
                 if (res.ok) {
-                    const data = await res.json();
                     showAlert('loginAlert', `Заказ #${orderId} отклонен`, 'success');
                     
                     // Обновляем статус в локальном списке
@@ -945,9 +747,7 @@
                     if (order) order.status = 'rejected';
                     
                     // Перерисовываем заказы
-                    const activeFilter = document.querySelector('.filter-btn.active').dataset.status;
-                    renderOrders(activeFilter);
-                    updateStats();
+                    renderOrders();
                 } else {
                     const error = await res.json();
                     throw new Error(error.detail || 'Ошибка при отклонении заказа');
@@ -985,8 +785,8 @@
 
         // Генерация случайного имени пользователя
         function generateUsername() {
-            const adjectives = ['admin', 'manager', 'super', 'tech', 'store', 'support', 'master', 'control'];
-            const nouns = ['user', 'account', 'admin', 'manager', 'operator', 'assistant'];
+            const adjectives = ['admin', 'manager', 'super', 'tech', 'store'];
+            const nouns = ['user', 'account', 'admin', 'manager'];
             const randomNum = Math.floor(Math.random() * 1000);
             const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
             const noun = nouns[Math.floor(Math.random() * nouns.length)];
@@ -999,11 +799,6 @@
             document.getElementById('loginBtn').addEventListener('click', async () => {
                 const user = document.getElementById('adminUser').value.trim();
                 const pass = document.getElementById('adminPass').value;
-                
-                if (!user || !pass) {
-                    showAlert('loginAlert', 'Введите логин и пароль', 'error');
-                    return;
-                }
                 
                 showAlert('loginAlert', 'Авторизация...', 'info');
                 const result = await tryLogin(user, pass);
@@ -1031,7 +826,6 @@
             // Выход
             document.getElementById('logoutBtn').addEventListener('click', () => {
                 setAuthToken('');
-                currentUser = '';
                 document.getElementById('dashboardCard').style.display = 'none';
                 document.getElementById('loginCard').style.display = 'block';
                 showAlert('loginAlert', 'Вы вышли из системы', 'info');
@@ -1057,18 +851,6 @@
             document.getElementById('refreshAdminsBtn').addEventListener('click', loadAdmins);
             document.getElementById('refreshOrdersBtn').addEventListener('click', loadOrders);
 
-            // Фильтры заказов
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    // Убираем активный класс у всех кнопок
-                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                    // Добавляем активный класс нажатой кнопке
-                    btn.classList.add('active');
-                    // Применяем фильтр
-                    renderOrders(btn.dataset.status);
-                });
-            });
-
             // Закрытие модального окна
             document.getElementById('closeModal').addEventListener('click', () => {
                 document.getElementById('orderModal').style.display = 'none';
@@ -1093,20 +875,6 @@
                     }
                 });
             }
-
-            // Enter для входа
-            document.getElementById('adminPass').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    document.getElementById('loginBtn').click();
-                }
-            });
-
-            // Enter для создания администратора
-            document.getElementById('newAdminLogin').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    document.getElementById('createAdminBtn').click();
-                }
-            });
         });
     </script>
 </body>

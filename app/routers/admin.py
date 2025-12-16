@@ -9,7 +9,7 @@ from starlette import status
 
 from app.config import TEST_LOGIN, TEST_PASSWORD
 from app.database.db import get_db
-from app.models.models import Admin, Order
+from app.models.models import Admin, Order, OrderItem, Item
 import secrets
 
 router = APIRouter()
@@ -146,33 +146,6 @@ async def get_admins(
             detail=f"Error getting admins: {str(e)}"
         )
 
-@router.get("/admin_orders")
-async def get_admin_routers(db: AsyncSession = Depends(get_db),
-                            auth: str = Depends(verify_admin)):
-    try:
-        result = await db.execute(select(Order))
-        orders = result.scalars().all()
-
-        order_list = []
-
-        for order in orders:
-            order_list.append({
-                "id": order.id,
-                "total_amount": order.total_amount,
-                "total_items": order.total_items,
-                "status": order.status,
-                "created_at": order.created_at
-            })
-
-        return {"orders": order_list}
-
-    except Exception as e:
-        await db.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error get orders: {str(e)}"
-        )
-
 @router.post("/accept_order")
 async def accept_order(
     order_id: int,  # FastAPI автоматически конвертирует
@@ -247,36 +220,43 @@ async def reject_order(
             detail=f"Error accepting order: {str(e)}"
         )
 
-
 @router.get("/admin_orders")
 async def get_admin_orders(
-        db: AsyncSession = Depends(get_db),
-        auth: Admin = Depends(verify_admin)
+    db: AsyncSession = Depends(get_db),
+    auth: Admin = Depends(verify_admin)
 ):
     try:
 
-        stmt = select(Order).options(
-            selectinload(Order.order_items)
-        ).order_by(Order.created_at.desc())
-
-        result = await db.execute(stmt)
-        orders = result.scalars().all()
+        order_stmt = select(Order).order_by(Order.created_at.desc())
+        order_result = await db.execute(order_stmt)
+        orders = order_result.scalars().all()
 
         order_list = []
 
         for order in orders:
-            # Получаем товары заказа
-            items = []
-            for order_item in order.order_items:
-                items.append({
-                    "product_id": order_item.product_id,
-                    "quantity": order_item.quantity,
-                    "price": order_item.price,
-                    "name": order_item.product_name if hasattr(order_item,
-                                                               'product_name') else f"Товар {order_item.product_id}"
-                })
 
-            order_list.append({
+            order_items_stmt = select(OrderItem).where(OrderItem.order_id == order.id)
+            order_items_result = await db.execute(order_items_stmt)
+            order_items = order_items_result.scalars().all()
+
+            items = []
+            for order_item in order_items:
+                # Для каждого OrderItem получаем соответствующий Item
+                item_stmt = select(Item).where(Item.id == order_item.item_id)
+                item_result = await db.execute(item_stmt)
+                item = item_result.scalar_one_or_none()
+
+                item_info = {
+                    "item_id": order_item.item_id,
+                    "name": item.name if item else f"Товар #{order_item.item_id}",
+                    "description": item.description if item else None,
+                    "quantity": order_item.quantity,
+                    "price": order_item.price_at_time,
+                    "subtotal": order_item.quantity * order_item.price_at_time
+                }
+                items.append(item_info)
+
+            order_data = {
                 "id": order.id,
                 "total_amount": order.total_amount,
                 "total_items": order.total_items,
@@ -284,10 +264,12 @@ async def get_admin_orders(
                 "address": order.address,
                 "telephone": order.telephone,
                 "email": order.email,
-                "created_at": order.created_at,
-                "updated_at": order.updated_at,
-                "items": items  # Добавляем список товаров
-            })
+                "created_at": order.created_at.isoformat() if order.created_at else None,
+                "updated_at": order.updated_at.isoformat() if order.updated_at else None,
+                "items": items
+            }
+
+            order_list.append(order_data)
 
         return {"orders": order_list}
 
