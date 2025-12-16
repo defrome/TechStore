@@ -10,7 +10,6 @@ from app.middlewares.create_session import SessionMiddleware
 from app.routers import items, categories, cart, order
 from app.routers import admin as adm
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
@@ -19,8 +18,6 @@ async def lifespan(app: FastAPI):
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
-
-
 
 app = FastAPI(lifespan=lifespan)
 
